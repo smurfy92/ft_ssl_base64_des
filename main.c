@@ -6,15 +6,22 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/07 11:44:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/07 12:06:44 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/08 15:13:52 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define F(b,c,d) ((b & c) | (~b & d))
-#define G(b,c,d) ((b & d) | (c & ~d))
-#define H(b,c,d) (b ^ c ^ d)
-#define I(b,c,d) (c ^ (b | ~d))
+#define F(b, c, d) ((b & c) | (~b & d))
+#define G(b, c, d) ((b & d) | (c & ~d))
+#define H(b, c, d) (b ^ c ^ d)
+#define I(b, c, d) (c ^ (b | ~d))
+#define LEFTROTATE(x, c) (x << c) | (x >> (32 - c))
+
+#define DEBUG 1
+
 #include <stdint.h>
+#include <stdio.h>
+#include "libft/includes/libft.h"
+
 
 int32_t g_s[64] = {7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17,
 	22, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 4, 11, 16, 23,
@@ -39,7 +46,55 @@ int32_t g_k[64] = {
 	0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
 	0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391};
 
+void    print_bits(unsigned char octet)
+{
+	int z = 128, oct = octet;
+
+	while (z > 0)
+	{
+		if (oct & z)
+			write(1, "1", 1);
+		else
+			write(1, "0", 1);
+		z >>= 1;
+	}
+	ft_putchar('\n');
+}
+
+int		print_usage(char *str)
+{
+	ft_putstr("usage: ");
+	ft_putstr(str);
+	ft_putstr(" [hash] [command options] [command arguments]");
+	return (-1);
+}
+
 int		main(int argc, char **argv)
 {
+	char *message;
+	int h0 = 0x67452301;
+	int h1 = 0xEFCDAB89;
+	int h2 = 0x98BADCFE;
+	int h3 = 0x10325476;
+	if (argc < 2)
+		return (print_usage(argv[0]));
+
+	if (ft_strlen(argv[1]) % 64 != 0)
+	{
+		message = (char *)malloc(sizeof(char) *  (ft_strlen(argv[1]) + (64 - ft_strlen(argv[1]) % 64)));
+#if (DEBUG == 1)
+		printf("size malloced -> %zu\n", ft_strlen(argv[1]) + (64 - ft_strlen(argv[1]) % 64));
+#endif
+		memcpy(message, argv[1], ft_strlen(argv[1]));
+		message[ft_strlen(argv[1])] = (char)(1 << 7);
+		int i = ft_strlen(argv[1]) - 1;
+		while (++i <  (ft_strlen(argv[1]) + (56 - ft_strlen(argv[1]) % 64)))
+			message[i] = 0;
+		int blocs = (ft_strlen(argv[1]) + (64 - ft_strlen(argv[1]) % 64)) / 64;
+#if (DEBUG == 1)
+		printf("blocs -> %d\n",blocs);
+#endif
+		memcpy(message, argv[1], ft_strlen(argv[1]));
+	}
 	return (0);
 }
