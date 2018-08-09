@@ -6,21 +6,11 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/07 11:44:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/08 15:13:52 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/09 11:30:18 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define F(b, c, d) ((b & c) | (~b & d))
-#define G(b, c, d) ((b & d) | (c & ~d))
-#define H(b, c, d) (b ^ c ^ d)
-#define I(b, c, d) (c ^ (b | ~d))
-#define LEFTROTATE(x, c) (x << c) | (x >> (32 - c))
-
-#define DEBUG 1
-
-#include <stdint.h>
-#include <stdio.h>
-#include "libft/includes/libft.h"
+#include "../includes/ft_ssl.h"
 
 
 int32_t g_s[64] = {7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17,
@@ -69,9 +59,29 @@ int		print_usage(char *str)
 	return (-1);
 }
 
+char	*padding(char *str)
+{
+	char *message;
+	int newlen;
+
+	newlen = ft_strlen(str) + 1;
+	while (newlen % 64 != 56)
+		newlen++;
+
+
+	message = (char *)malloc(sizeof(char) * newlen + 8);
+#if (DEBUG == 1)
+	printf("size malloced -> %zu\n", newlen);
+#endif
+	memcpy(message, str, ft_strlen(str));
+	message[ft_strlen(str)] = 128;
+
+}
+
 int		main(int argc, char **argv)
 {
 	char *message;
+
 	int h0 = 0x67452301;
 	int h1 = 0xEFCDAB89;
 	int h2 = 0x98BADCFE;
@@ -79,14 +89,9 @@ int		main(int argc, char **argv)
 	if (argc < 2)
 		return (print_usage(argv[0]));
 
-	if (ft_strlen(argv[1]) % 64 != 0)
+	message = ft_padding(argv[1]);
+	if (ft_strlen(argv[1]) % 64 !=  56)
 	{
-		message = (char *)malloc(sizeof(char) *  (ft_strlen(argv[1]) + (64 - ft_strlen(argv[1]) % 64)));
-#if (DEBUG == 1)
-		printf("size malloced -> %zu\n", ft_strlen(argv[1]) + (64 - ft_strlen(argv[1]) % 64));
-#endif
-		memcpy(message, argv[1], ft_strlen(argv[1]));
-		message[ft_strlen(argv[1])] = (char)(1 << 7);
 		int i = ft_strlen(argv[1]) - 1;
 		while (++i <  (ft_strlen(argv[1]) + (56 - ft_strlen(argv[1]) % 64)))
 			message[i] = 0;
@@ -94,7 +99,7 @@ int		main(int argc, char **argv)
 #if (DEBUG == 1)
 		printf("blocs -> %d\n",blocs);
 #endif
-		memcpy(message, argv[1], ft_strlen(argv[1]));
+
 	}
 	return (0);
 }
