@@ -6,12 +6,11 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/07 11:44:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/09 15:25:45 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/09 16:44:52 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ft_ssl.h"
-
 
 int32_t g_r[64] = {7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17,
 	22, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 4, 11, 16, 23,
@@ -36,11 +35,26 @@ int32_t g_k[64] = {
 	0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
 	0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391};
 
-uint32_t g_h[4] = {0x67452301,0xefcdab89,0x98badcfe,0x10325476};
+uint32_t g_h[4] = {0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476};
 
-void    print_bits(unsigned char octet)
+void	print_output(void)
 {
-	int z = 128, oct = octet;
+	uint8_t *p;
+
+	p = (uint8_t *)&g_h[0];
+	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
+	p = (uint8_t *)&g_h[1];
+	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
+	p = (uint8_t *)&g_h[2];
+	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
+	p = (uint8_t *)&g_h[3];
+	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
+}
+
+void	print_bits(unsigned char octet)
+{
+	int z = 128;
+	int oct = octet;
 
 	while (z > 0)
 	{
@@ -63,10 +77,10 @@ int		print_usage(char *str)
 
 t_mem	*padding(char *str)
 {
-	t_mem *message;
-	size_t newlen;
-	size_t len;
-	uint32_t bitlen;
+	t_mem		*message;
+	size_t		newlen;
+	size_t		len;
+	uint32_t	bitlen;
 
 	message = (t_mem *)malloc(sizeof(t_mem));
 	len = ft_strlen(str);
@@ -76,9 +90,6 @@ t_mem	*padding(char *str)
 		newlen++;
 	message->data = (char *)malloc(sizeof(char) * newlen + 64);
 	message->len = newlen;
-#if (DEBUG == 1)
-	printf("size malloced -> %zu\n", newlen + 8);
-#endif
 	memcpy(message->data, str, len);
 	message->data[len] = (char)128;
 	while (++len <= newlen)
@@ -87,12 +98,34 @@ t_mem	*padding(char *str)
 	return (message);
 }
 
+void	md5_process(t_i *m, uint32_t *w, int i)
+{
+	if (i < 16)
+		((*m).f = F((*m).b, (*m).c, (*m).d)) ?
+		(*m).g = i : 0;
+	else if (i < 32)
+		((*m).f = G((*m).b, (*m).c, (*m).d)) ?
+		((*m).g = (5 * i + 1) % 16) : 0;
+	else if (i < 48)
+		((*m).f = H((*m).b, (*m).c, (*m).d)) ?
+		((*m).g = (3 * i + 5) % 16) : 0;
+	else
+		((*m).f = I((*m).b, (*m).c, (*m).d)) ?
+		((*m).g = (7 * i) % 16) : 0;
+	(*m).t = (*m).d;
+	(*m).d = (*m).c;
+	(*m).c = (*m).b;
+	(*m).b = (*m).b +
+	LEFTROTATE(((*m).a + (*m).f + g_k[i] + w[(*m).g]), g_r[i]);
+	(*m).a = (*m).t;
+}
+
 void	hash_md5(t_mem *mem)
 {
-	int offset;
-	int i;
-	t_i m;
-	uint32_t *w;
+	int			offset;
+	int			i;
+	t_i			m;
+	uint32_t	*w;
 
 	offset = 0;
 	while (offset < mem->len)
@@ -104,61 +137,30 @@ void	hash_md5(t_mem *mem)
 		m.d = g_h[3];
 		i = -1;
 		while (++i < 64)
-		{
-			if (i < 16)
-			{
-				m.f = F(m.b, m.c, m.d);
-				m.g = i;
-			}
-			else if (i < 32)
-			{
-				m.f = G(m.b, m.c, m.d);
-				m.g = (5 * i + 1) % 16;
-			}
-			else if (i < 48)
-			{
-				m.f = H(m.b, m.c, m.d);
-				m.g = (3 * i + 5) % 16;
-			}
-			else
-			{
-				m.f = I(m.b, m.c, m.d);
-				m.g = (7 * i) % 16;
-			}
-			m.t = m.d;
-			m.d = m.c;
-			m.c = m.b;
-			m.b = m.b + LEFTROTATE((m.a + m.f + g_k[i] + w[m.g]), g_r[i]);
-			m.a = m.t;
-		}
-		ft_putstr("ici\n");
+			md5_process(&m, w, i);
 		g_h[0] += m.a;
 		g_h[1] += m.b;
 		g_h[2] += m.c;
 		g_h[3] += m.d;
 		offset += 64;
 	}
-	uint8_t *p;
-	p=(uint8_t *)&g_h[0];
-	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
-
-	p=(uint8_t *)&g_h[1];
-	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
-
-	p=(uint8_t *)&g_h[2];
-	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
-
-	p=(uint8_t *)&g_h[3];
-	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
 }
 
 int		main(int argc, char **argv)
 {
-	t_mem *message;
+	t_mem	*message;
+	int		fd;
 
 	if (argc < 2)
 		return (print_usage(argv[0]));
-	message = padding(argv[1]);
+	if ((fd = open(argv[1], O_RDONLY)) == -1)
+		message = padding(argv[1]);
+	else
+	{
+		message = read_fd(fd);
+		message = padding(message->data);
+	}
 	hash_md5(message);
+	print_output();
 	return (0);
 }

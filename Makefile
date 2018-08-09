@@ -1,4 +1,5 @@
 SRC = srcs/ft_ssl.c
+SRC += srcs/common.c
 
 NAME = ft_ssl
 
