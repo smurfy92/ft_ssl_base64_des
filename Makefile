@@ -14,7 +14,6 @@ INC = -I ./includes/
 
 all: start lib $(NAME)
 
-
 lib:
 	-@make -C libft nohd
 
@@ -24,11 +23,7 @@ $(NAME): $(OBJ)
 
 
 start:
-
-
 	@echo "\n";
-
-
 	@echo "			$(CG)      :::::::::: :::::::::::           ::::::::   ::::::::  :::   $(CE)";
 	@echo "			$(CG)     :+:            :+:              :+:    :+: :+:    :+: :+:    $(CE)";
 	@echo "			$(CG)    +:+            +:+              +:+        +:+        +:+     $(CE)";

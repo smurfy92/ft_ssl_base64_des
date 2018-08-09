@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/07 11:44:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/09 11:30:18 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/09 12:05:32 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,10 @@ char	*padding(char *str)
 {
 	char *message;
 	int newlen;
+	int len;
 
-	newlen = ft_strlen(str) + 1;
+	len = ft_strlen(str);
+	newlen = len + 1;
 	while (newlen % 64 != 56)
 		newlen++;
 
@@ -73,33 +75,23 @@ char	*padding(char *str)
 #if (DEBUG == 1)
 	printf("size malloced -> %zu\n", newlen);
 #endif
-	memcpy(message, str, ft_strlen(str));
-	message[ft_strlen(str)] = 128;
-
+	memcpy(message, str, len);
+	message[len] = (char)128;
+	while (++len <= newlen)
+		message[len] = 0;
+	return (message);
 }
 
 int		main(int argc, char **argv)
 {
 	char *message;
 
-	int h0 = 0x67452301;
-	int h1 = 0xEFCDAB89;
-	int h2 = 0x98BADCFE;
-	int h3 = 0x10325476;
 	if (argc < 2)
 		return (print_usage(argv[0]));
-
-	message = ft_padding(argv[1]);
-	if (ft_strlen(argv[1]) % 64 !=  56)
-	{
-		int i = ft_strlen(argv[1]) - 1;
-		while (++i <  (ft_strlen(argv[1]) + (56 - ft_strlen(argv[1]) % 64)))
-			message[i] = 0;
-		int blocs = (ft_strlen(argv[1]) + (64 - ft_strlen(argv[1]) % 64)) / 64;
+	message = padding(argv[1]);
+	int blocs = ft_strlen(message) / 64;
 #if (DEBUG == 1)
-		printf("blocs -> %d\n",blocs);
+	printf("blocs -> %d\n",blocs);
 #endif
-
-	}
 	return (0);
 }

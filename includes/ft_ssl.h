@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/09 11:08:41 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/09 11:11:57 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/09 12:04:38 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,3 +21,10 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "../libft/includes/libft.h"
+
+
+typedef struct		s_mem
+{
+	char			*data;
+	int				len;
+}					t_mem;
