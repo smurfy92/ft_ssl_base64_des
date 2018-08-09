@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/07 11:44:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/09 12:05:32 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/09 13:25:27 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,37 +59,40 @@ int		print_usage(char *str)
 	return (-1);
 }
 
-char	*padding(char *str)
+t_mem	*padding(char *str)
 {
-	char *message;
-	int newlen;
-	int len;
+	t_mem *message;
+	size_t newlen;
+	size_t len;
+	uint32_t bitlen;
 
+	message = (t_mem *)malloc(sizeof(t_mem));
 	len = ft_strlen(str);
+	bitlen = len * 8;
 	newlen = len + 1;
 	while (newlen % 64 != 56)
 		newlen++;
-
-
-	message = (char *)malloc(sizeof(char) * newlen + 8);
+	message->data = (char *)malloc(sizeof(char) * newlen + 8);
+	message->len = newlen + 8;
 #if (DEBUG == 1)
 	printf("size malloced -> %zu\n", newlen);
 #endif
-	memcpy(message, str, len);
-	message[len] = (char)128;
+	memcpy(message->data, str, len);
+	message->data[len] = (char)128;
 	while (++len <= newlen)
-		message[len] = 0;
+		message->data[len] = 0;
+	ft_memcpy(message->data + len, &bitlen, 4);
 	return (message);
 }
 
 int		main(int argc, char **argv)
 {
-	char *message;
+	t_mem *message;
 
 	if (argc < 2)
 		return (print_usage(argv[0]));
 	message = padding(argv[1]);
-	int blocs = ft_strlen(message) / 64;
+	int blocs = ft_strlen(message->data) / 64;
 #if (DEBUG == 1)
 	printf("blocs -> %d\n",blocs);
 #endif
