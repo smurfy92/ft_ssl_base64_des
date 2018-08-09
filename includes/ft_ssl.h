@@ -23,6 +23,8 @@
 # include <stdint.h>
 # include <stdio.h>
 # include "../libft/includes/libft.h"
+# include <errno.h>
+# include <string.h>
 
 
 typedef struct		s_mem

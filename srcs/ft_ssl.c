@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/07 11:44:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/09 16:44:52 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/09 17:08:51 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ int		print_usage(char *str)
 	return (-1);
 }
 
-t_mem	*padding(char *str)
+t_mem	*padding(t_mem *mem)
 {
 	t_mem		*message;
 	size_t		newlen;
@@ -83,14 +83,14 @@ t_mem	*padding(char *str)
 	uint32_t	bitlen;
 
 	message = (t_mem *)malloc(sizeof(t_mem));
-	len = ft_strlen(str);
+	len = mem->len;
 	bitlen = len * 8;
 	newlen = len + 1;
 	while (newlen % 64 != 56)
 		newlen++;
 	message->data = (char *)malloc(sizeof(char) * newlen + 64);
 	message->len = newlen;
-	memcpy(message->data, str, len);
+	memcpy(message->data, mem->data, mem->len);
 	message->data[len] = (char)128;
 	while (++len <= newlen)
 		message->data[len] = 0;
@@ -151,14 +151,32 @@ int		main(int argc, char **argv)
 	t_mem	*message;
 	int		fd;
 
+	message = NULL;
+
+
 	if (argc < 2)
 		return (print_usage(argv[0]));
-	if ((fd = open(argv[1], O_RDONLY)) == -1)
-		message = padding(argv[1]);
+	
+	if (!isatty(0))
+	{
+		message = read_fd(0);
+		message = padding(message);
+	}
 	else
 	{
-		message = read_fd(fd);
-		message = padding(message->data);
+		if ((fd = open(argv[1], O_RDONLY)) != -1)
+		{
+			message = read_fd(fd);
+			int fd2 = open("test", O_RDWR| O_CREAT, 0666);
+			write_fd(fd2, message);
+			message = padding(message);	
+		}
+		else
+		{
+			ft_putstr("error reading file");
+			return (-1);
+		} 
+			
 	}
 	hash_md5(message);
 	print_output();
