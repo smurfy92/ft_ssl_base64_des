@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/09 11:08:41 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/09 13:56:00 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/09 15:06:19 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,3 +28,14 @@ typedef struct		s_mem
 	char			*data;
 	int				len;
 }					t_mem;
+
+typedef struct		s_i
+{
+	int				a;
+	int				b;
+	int				c;
+	int				d;
+	int				f;
+	int				g;
+	int				t;
+}					t_i;

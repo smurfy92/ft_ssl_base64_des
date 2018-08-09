@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/07 11:44:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/09 14:55:52 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/09 15:25:45 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ int32_t g_k[64] = {
 	0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
 	0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
 	0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391};
+
+uint32_t g_h[4] = {0x67452301,0xefcdab89,0x98badcfe,0x10325476};
 
 void    print_bits(unsigned char octet)
 {
@@ -89,68 +91,64 @@ void	hash_md5(t_mem *mem)
 {
 	int offset;
 	int i;
-
-	uint32_t h0 = 0x67452301;
-	uint32_t h1 = 0xefcdab89;
-	uint32_t h2 = 0x98badcfe;
-	uint32_t h3 = 0x10325476;
-	int a, b, c, d, f ,g, temp;
+	t_i m;
 	uint32_t *w;
 
 	offset = 0;
 	while (offset < mem->len)
 	{
 		w = (uint32_t*)(mem->data + offset);
-		a = h0;
-		b = h1;
-		c = h2;
-		d = h3;
+		m.a = g_h[0];
+		m.b = g_h[1];
+		m.c = g_h[2];
+		m.d = g_h[3];
 		i = -1;
 		while (++i < 64)
 		{
 			if (i < 16)
 			{
-				f = F(b, c, d);
-				g = i;
+				m.f = F(m.b, m.c, m.d);
+				m.g = i;
 			}
 			else if (i < 32)
 			{
-				f = G(b, c, d);
-				g = (5 * i + 1) % 16;
+				m.f = G(m.b, m.c, m.d);
+				m.g = (5 * i + 1) % 16;
 			}
 			else if (i < 48)
 			{
-				f = H(b, c, d);
-				g = (3 * i + 5) % 16;
+				m.f = H(m.b, m.c, m.d);
+				m.g = (3 * i + 5) % 16;
 			}
 			else
 			{
-				f = I(b, c, d);
-				g = (7 * i) % 16;
+				m.f = I(m.b, m.c, m.d);
+				m.g = (7 * i) % 16;
 			}
-			temp = d;
-			d = c;
-			c = b;
-			b = b + LEFTROTATE((a + f + g_k[i] + w[g]), g_r[i]);
-			a = temp;
+			m.t = m.d;
+			m.d = m.c;
+			m.c = m.b;
+			m.b = m.b + LEFTROTATE((m.a + m.f + g_k[i] + w[m.g]), g_r[i]);
+			m.a = m.t;
 		}
-		h0 += a;
-		h1 += b;
-		h2 += c;
-		h3 += d;
+		ft_putstr("ici\n");
+		g_h[0] += m.a;
+		g_h[1] += m.b;
+		g_h[2] += m.c;
+		g_h[3] += m.d;
 		offset += 64;
 	}
 	uint8_t *p;
-	p=(uint8_t *)&h0;
+	p=(uint8_t *)&g_h[0];
 	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
 
-	p=(uint8_t *)&h1;
+	p=(uint8_t *)&g_h[1];
 	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
 
-	p=(uint8_t *)&h2;
+	p=(uint8_t *)&g_h[2];
 	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
 
-	p=(uint8_t *)&h3;
+	p=(uint8_t *)&g_h[3];
 	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
 }
 
