@@ -6,14 +6,14 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/07 11:44:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/09 13:25:27 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/09 14:55:52 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ft_ssl.h"
 
 
-int32_t g_s[64] = {7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17,
+int32_t g_r[64] = {7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17,
 	22, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 4, 11, 16, 23,
 	4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 6, 10, 15, 21, 6, 10, 15, 21,
 	6, 10, 15, 21, 6, 10, 15, 21};
@@ -72,17 +72,86 @@ t_mem	*padding(char *str)
 	newlen = len + 1;
 	while (newlen % 64 != 56)
 		newlen++;
-	message->data = (char *)malloc(sizeof(char) * newlen + 8);
-	message->len = newlen + 8;
+	message->data = (char *)malloc(sizeof(char) * newlen + 64);
+	message->len = newlen;
 #if (DEBUG == 1)
-	printf("size malloced -> %zu\n", newlen);
+	printf("size malloced -> %zu\n", newlen + 8);
 #endif
 	memcpy(message->data, str, len);
 	message->data[len] = (char)128;
 	while (++len <= newlen)
 		message->data[len] = 0;
-	ft_memcpy(message->data + len, &bitlen, 4);
+	ft_memcpy(message->data + newlen, &bitlen, 4);
 	return (message);
+}
+
+void	hash_md5(t_mem *mem)
+{
+	int offset;
+	int i;
+
+	uint32_t h0 = 0x67452301;
+	uint32_t h1 = 0xefcdab89;
+	uint32_t h2 = 0x98badcfe;
+	uint32_t h3 = 0x10325476;
+	int a, b, c, d, f ,g, temp;
+	uint32_t *w;
+
+	offset = 0;
+	while (offset < mem->len)
+	{
+		w = (uint32_t*)(mem->data + offset);
+		a = h0;
+		b = h1;
+		c = h2;
+		d = h3;
+		i = -1;
+		while (++i < 64)
+		{
+			if (i < 16)
+			{
+				f = F(b, c, d);
+				g = i;
+			}
+			else if (i < 32)
+			{
+				f = G(b, c, d);
+				g = (5 * i + 1) % 16;
+			}
+			else if (i < 48)
+			{
+				f = H(b, c, d);
+				g = (3 * i + 5) % 16;
+			}
+			else
+			{
+				f = I(b, c, d);
+				g = (7 * i) % 16;
+			}
+			temp = d;
+			d = c;
+			c = b;
+			b = b + LEFTROTATE((a + f + g_k[i] + w[g]), g_r[i]);
+			a = temp;
+		}
+		h0 += a;
+		h1 += b;
+		h2 += c;
+		h3 += d;
+		offset += 64;
+	}
+	uint8_t *p;
+	p=(uint8_t *)&h0;
+	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
+
+	p=(uint8_t *)&h1;
+	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
+
+	p=(uint8_t *)&h2;
+	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
+
+	p=(uint8_t *)&h3;
+	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
 }
 
 int		main(int argc, char **argv)
@@ -92,9 +161,6 @@ int		main(int argc, char **argv)
 	if (argc < 2)
 		return (print_usage(argv[0]));
 	message = padding(argv[1]);
-	int blocs = ft_strlen(message->data) / 64;
-#if (DEBUG == 1)
-	printf("blocs -> %d\n",blocs);
-#endif
+	hash_md5(message);
 	return (0);
 }
