@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/09 11:08:41 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/09 16:37:21 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/18 17:44:34 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FT_SSL_H
@@ -30,8 +30,25 @@
 typedef struct		s_mem
 {
 	char			*data;
+	uint32_t		h[4];
 	int				len;
 }					t_mem;
+
+typedef struct		s_arg
+{
+	char			*str;
+	struct s_arg    *next;
+}					t_arg;
+
+typedef struct		s_opt
+{
+	char			*hash;
+	struct s_arg	*arg;
+	int				p;
+	int				q;
+	int				r;
+	int				s;
+}					t_opt;
 
 typedef struct		s_i
 {

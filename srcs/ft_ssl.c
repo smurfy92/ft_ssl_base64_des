@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/07 11:44:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/09 17:08:51 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/18 17:50:25 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,41 +37,25 @@ int32_t g_k[64] = {
 
 uint32_t g_h[4] = {0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476};
 
-void	print_output(void)
+void	print_output(t_mem *mem)
 {
 	uint8_t *p;
 
-	p = (uint8_t *)&g_h[0];
+	p = (uint8_t *)&mem->h[0];
 	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
-	p = (uint8_t *)&g_h[1];
+	p = (uint8_t *)&mem->h[1];
 	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
-	p = (uint8_t *)&g_h[2];
+	p = (uint8_t *)&mem->h[2];
 	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
-	p = (uint8_t *)&g_h[3];
+	p = (uint8_t *)&mem->h[3];
 	printf("%2.2x%2.2x%2.2x%2.2x", p[0], p[1], p[2], p[3]);
-}
-
-void	print_bits(unsigned char octet)
-{
-	int z = 128;
-	int oct = octet;
-
-	while (z > 0)
-	{
-		if (oct & z)
-			write(1, "1", 1);
-		else
-			write(1, "0", 1);
-		z >>= 1;
-	}
-	ft_putchar('\n');
 }
 
 int		print_usage(char *str)
 {
 	ft_putstr("usage: ");
 	ft_putstr(str);
-	ft_putstr(" [hash] [command options] [command arguments]");
+	ft_putendl(" [hash] [command options] [command arguments]");
 	return (-1);
 }
 
@@ -83,6 +67,10 @@ t_mem	*padding(t_mem *mem)
 	uint32_t	bitlen;
 
 	message = (t_mem *)malloc(sizeof(t_mem));
+	message->h[0] = 0x67452301;
+	message->h[1] = 0xefcdab89;
+	message->h[2] = 0x98badcfe;
+	message->h[3] = 0x10325476;
 	len = mem->len;
 	bitlen = len * 8;
 	newlen = len + 1;
@@ -102,21 +90,21 @@ void	md5_process(t_i *m, uint32_t *w, int i)
 {
 	if (i < 16)
 		((*m).f = F((*m).b, (*m).c, (*m).d)) ?
-		(*m).g = i : 0;
+			(*m).g = i : 0;
 	else if (i < 32)
 		((*m).f = G((*m).b, (*m).c, (*m).d)) ?
-		((*m).g = (5 * i + 1) % 16) : 0;
+			((*m).g = (5 * i + 1) % 16) : 0;
 	else if (i < 48)
 		((*m).f = H((*m).b, (*m).c, (*m).d)) ?
-		((*m).g = (3 * i + 5) % 16) : 0;
+			((*m).g = (3 * i + 5) % 16) : 0;
 	else
 		((*m).f = I((*m).b, (*m).c, (*m).d)) ?
-		((*m).g = (7 * i) % 16) : 0;
+			((*m).g = (7 * i) % 16) : 0;
 	(*m).t = (*m).d;
 	(*m).d = (*m).c;
 	(*m).c = (*m).b;
 	(*m).b = (*m).b +
-	LEFTROTATE(((*m).a + (*m).f + g_k[i] + w[(*m).g]), g_r[i]);
+		LEFTROTATE(((*m).a + (*m).f + g_k[i] + w[(*m).g]), g_r[i]);
 	(*m).a = (*m).t;
 }
 
@@ -131,54 +119,149 @@ void	hash_md5(t_mem *mem)
 	while (offset < mem->len)
 	{
 		w = (uint32_t*)(mem->data + offset);
-		m.a = g_h[0];
-		m.b = g_h[1];
-		m.c = g_h[2];
-		m.d = g_h[3];
+		m.a = mem->h[0];
+		m.b = mem->h[1];
+		m.c = mem->h[2];
+		m.d = mem->h[3];
 		i = -1;
 		while (++i < 64)
 			md5_process(&m, w, i);
-		g_h[0] += m.a;
-		g_h[1] += m.b;
-		g_h[2] += m.c;
-		g_h[3] += m.d;
+		mem->h[0] += m.a;
+		mem->h[1] += m.b;
+		mem->h[2] += m.c;
+		mem->h[3] += m.d;
 		offset += 64;
+	}
+}
+
+t_opt	*add_arg(t_opt *opt, char *str)
+{
+	t_arg *arg;
+	t_arg *tmp;
+
+	arg = (t_arg*)malloc(sizeof(t_arg));
+	arg->str = ft_strdup(str);
+	arg->next = NULL;
+	if (opt->arg == NULL)
+		opt->arg = arg;
+	else
+	{
+		tmp = opt->arg;
+		while (tmp->next)
+			tmp = tmp->next;
+		tmp->next = arg;
+	}
+	return (opt);
+}
+
+t_opt	*check_options(t_opt *opt, char *str)
+{
+	int i; 
+	int b;
+
+	i = -1;
+	b = 0;
+	while (str[++i])
+	{
+		if (str[0] == '-' && opt->arg == NULL)
+			b = 1;
+		else
+			return (add_arg(opt, str));
+		if (b)
+		{
+			(str[i] == 'p') ? (opt->p = 1) : 0;
+			(str[i] == 'q') ? (opt->q = 1) : 0;
+			(str[i] == 'r') ? (opt->r = 1) : 0;
+			(str[i] == 's') ? (opt->s = 1) : 0;
+		}
+	}
+	return (opt);
+}
+
+
+t_opt	*check_opt(t_opt *opt, char **argv)
+{
+	int i;
+
+	i = 1;
+	opt = (t_opt*)malloc(sizeof(t_opt));
+	opt->hash = ft_strdup(argv[1]);
+	opt->p = 0;
+	opt->q = 0;
+	opt->r = 0;
+	opt->s = 0;
+	opt->arg = NULL;
+	if (ft_strequ(opt->hash, "md5") != 1 && ft_strequ(opt->hash, "sha256") != 1)
+	{
+		ft_putendl("invalid hash algorithm");
+		exit(-1);
+	}
+	while (argv[++i])
+		opt = check_options(opt, argv[i]);
+	return (opt);
+}
+
+void	print_debug(t_opt *opt)
+{
+
+	printf("opt->hash %s\n", opt->hash);
+	printf("opt->p %d\n", opt->p);
+	printf("opt->q %d\n", opt->q);
+	printf("opt->r %d\n", opt->r);
+	printf("opt->s %d\n", opt->s);
+	t_arg *arg;
+	arg = opt->arg;
+	while (arg)
+	{
+		printf("arg ->%s\n" ,arg->str);
+		arg = arg->next;
 	}
 }
 
 int		main(int argc, char **argv)
 {
 	t_mem	*message;
+	t_opt	*opt;
+	t_arg	*arg;
 	int		fd;
 
 	message = NULL;
-
-
+	opt = NULL;
+	int i = -1;
+	while (argv[++i])
+		printf("argv -> %s\n",argv[i]);
 	if (argc < 2)
 		return (print_usage(argv[0]));
-	
-	if (!isatty(0))
+	opt = check_opt(opt, argv);
+	print_debug(opt);
+	if (!isatty(0) || argc < 3)
 	{
 		message = read_fd(0);
+		if (opt->p)
+			ft_putstr(message->data);
 		message = padding(message);
+		hash_md5(message);
+		print_output(message);
 	}
-	else
+	if (argc >= 3)
 	{
-		if ((fd = open(argv[1], O_RDONLY)) != -1)
+		arg = opt->arg;
+		while(arg)
 		{
-			message = read_fd(fd);
-			int fd2 = open("test", O_RDWR| O_CREAT, 0666);
-			write_fd(fd2, message);
-			message = padding(message);	
+			if ((fd = open(arg->str, O_RDONLY)) != -1)
+			{
+				message = read_fd(fd);
+				int fd2 = open("test", O_RDWR| O_CREAT, 0666);
+				write_fd(fd2, message);
+				message = padding(message);	
+				hash_md5(message);
+				print_output(message);
+				printf("\n");
+			}
+			else
+				ft_putendl("error reading file");
+			arg = arg->next;	
 		}
-		else
-		{
-			ft_putstr("error reading file");
-			return (-1);
-		} 
-			
 	}
-	hash_md5(message);
-	print_output();
 	return (0);
 }
