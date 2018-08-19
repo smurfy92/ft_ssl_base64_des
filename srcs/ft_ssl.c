@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/07 11:44:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/18 17:50:25 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/19 09:19:52 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,6 +218,15 @@ void	print_debug(t_opt *opt)
 	}
 }
 
+void	write_file_error(char *file, t_opt *opt)
+{
+	ft_putstr("ft_ssl: ");
+	ft_putstr(opt->hash);
+	ft_putstr(": ");
+	ft_putstr(file);
+	ft_putendl(": No such file or directory");
+}
+
 int		main(int argc, char **argv)
 {
 	t_mem	*message;
@@ -242,6 +251,7 @@ int		main(int argc, char **argv)
 		message = padding(message);
 		hash_md5(message);
 		print_output(message);
+		printf("\n");
 	}
 	if (argc >= 3)
 	{
@@ -251,15 +261,30 @@ int		main(int argc, char **argv)
 			if ((fd = open(arg->str, O_RDONLY)) != -1)
 			{
 				message = read_fd(fd);
-				int fd2 = open("test", O_RDWR| O_CREAT, 0666);
-				write_fd(fd2, message);
 				message = padding(message);	
 				hash_md5(message);
+
+				(!opt->r && !opt->q) ? (printf("MD5 (%s) = ", arg->str)) : 0;
 				print_output(message);
+				(opt->r && !opt->q) ? (printf(" %s", arg->str)) : 0;
 				printf("\n");
 			}
 			else
-				ft_putendl("error reading file");
+			{
+				if (opt->s)
+				{
+					message = (t_mem*)malloc(sizeof(t_mem));
+					message->data = ft_strdup(arg->str);
+					message->len = ft_strlen(message->data);
+					message = padding(message);
+					hash_md5(message);
+					(!opt->r && !opt->q) ? (printf("MD5 (\"%s\") = ", arg->str)) : 0;
+					print_output(message);
+					(opt->r && !opt->q) ? (printf(" \"%s\"", arg->str)) : 0;
+				printf("\n");
+				}else
+					(!opt->q) ? (write_file_error(arg->str, opt)) : 0;
+			}
 			arg = arg->next;	
 		}
 	}
