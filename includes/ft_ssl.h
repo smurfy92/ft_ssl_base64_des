@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/09 11:08:41 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/18 17:44:34 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/19 16:39:20 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FT_SSL_H
@@ -17,6 +17,14 @@
 # define H(b, c, d) (b ^ c ^ d)
 # define I(b, c, d) (c ^ (b | ~d))
 # define LEFTROTATE(x, c) (((x) << (c)) | ((x) >> (32 - (c))))
+# define CH(x, y, z) ((x & y) ^ (~x & z))
+# define MAJ(x, y, z) ((x & y) ^ (x & z) ^ (y & z))
+# define SHR(x, n) (x >> n)
+# define ROTR(x, n) (((x) >> (n)) ^ ((x) << (32 - (n))))
+# define A(x) (ROTR(x, 2) ^ ROTR(x, 13) ^ ROTR(x, 22))
+# define B(x) (ROTR(x, 6) ^ ROTR(x, 11) ^ ROTR(x, 25))
+# define C(x) (ROTR(x, 7) ^ ROTR(x, 18) ^ ROTR(x, 3))
+# define D(x) (ROTR(x, 17) ^ ROTR(x, 19) ^ ROTR(x, 10))
 
 # define DEBUG 1
 # define BUFFER 1024
@@ -29,7 +37,7 @@
 typedef struct		s_mem
 {
 	char			*data;
-	uint32_t		h[4];
+	uint32_t		h[8];
 	int				len;
 }					t_mem;
 
@@ -55,9 +63,12 @@ typedef struct		s_i
 	int				b;
 	int				c;
 	int				d;
+	int				e;
 	int				f;
 	int				g;
+	int				h;
 	int				t;
+	int				t2;
 }					t_i;
 /* 
 ** srcs/common.c
