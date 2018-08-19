@@ -1,5 +1,8 @@
 SRC = ft_ssl.c
 SRC += common.c
+SRC += md5.c
+SRC += parsing.c
+SRC += print.c
 
 NAME = ft_ssl
 

@@ -26,7 +26,6 @@
 # include <errno.h>
 # include <string.h>
 
-
 typedef struct		s_mem
 {
 	char			*data;
@@ -60,10 +59,30 @@ typedef struct		s_i
 	int				g;
 	int				t;
 }					t_i;
-
+/* 
+** srcs/common.c
+*/
 void	ft_free_mem(t_mem *mem);
 t_mem	*ft_memjoin(t_mem *dest, t_mem *src);
 t_mem	*read_fd(int fd);
 void	write_fd(int fd, t_mem *mem);
-
+int		print_usage(char *str);
+/* 
+** srcs/print.c
+*/
+void	print_output(t_mem *mem);
+void	print_debug(t_opt *opt);
+void	write_file_error(char *file, t_opt *opt);
+/*
+** srcs/parsing.c
+*/
+t_opt	*add_arg(t_opt *opt, char *str);
+t_opt	*check_options(t_opt *opt, char *str);
+t_opt	*check_opt(t_opt *opt, char **argv);
+/*
+** srcs/md5.c
+*/
+t_mem	*padding(t_mem *mem);
+void	md5_process(t_i *m, uint32_t *w, int i);
+void	hash_md5(t_mem *mem);
 #endif

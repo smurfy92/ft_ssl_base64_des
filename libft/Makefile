@@ -62,6 +62,7 @@ SRC= ft_memset.c\
 	 ft_strsplit.c\
 	 ft_quotes.c\
 	 ft_itoa.c\
+	 ft_itoa_base.c\
 	 ft_putchar_fd.c\
 	 ft_putstr_fd.c\
 	 ft_putendl_fd.c\

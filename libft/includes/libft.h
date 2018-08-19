@@ -37,6 +37,7 @@ int					ft_isascii(int c);
 int					ft_isdigit(int c);
 int					ft_isprint(int c);
 char				*ft_itoa(int n);
+char				*ft_itoa_base(int n, int base);
 size_t				ft_strlen(const char *s);
 void				*ft_memalloc(size_t size);
 void				*ft_memccpy(void *dst,

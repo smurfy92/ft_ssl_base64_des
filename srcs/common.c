@@ -74,3 +74,11 @@ void	write_fd(int fd, t_mem *mem)
 			write(fd, &mem->data[i * BUFFER], BUFFER);
 	}
 }
+
+int		print_usage(char *str)
+{
+	ft_putstr("usage: ");
+	ft_putstr(str);
+	ft_putendl(" [hash] [command options] [command arguments]");
+	return (-1);
+}
