@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/19 09:50:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/19 16:09:50 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/21 16:38:04 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ t_mem	*padding(t_mem *mem)
 	newlen = len + 1;
 	while (newlen % 64 != 56)
 		newlen++;
-	message->data = (char *)malloc(sizeof(char) * newlen + 64);
+	message->data = (unsigned char *)malloc(sizeof(char) * newlen + 64);
 	message->len = newlen;
 	memcpy(message->data, mem->data, mem->len);
 	message->data[len] = (char)128;
