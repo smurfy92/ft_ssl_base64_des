@@ -3,6 +3,7 @@ SRC += common.c
 SRC += md5.c
 SRC += parsing.c
 SRC += print.c
+SRC += sha256.c
 
 NAME = ft_ssl
 
