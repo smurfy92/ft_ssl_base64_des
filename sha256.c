@@ -79,6 +79,8 @@ void sha256_transform(SHA256_CTX *ctx, const BYTE data[])
 		c = b;
 		b = a;
 		a = t1 + t2;
+		if (i == 10)
+		{
 		printf("a->%d\n", a);
 		printf("b->%d\n", b);
 		printf("c->%d\n", c);
@@ -89,7 +91,12 @@ void sha256_transform(SHA256_CTX *ctx, const BYTE data[])
 		printf("h->%d\n", h);
 		printf("t->%d\n", t1);
 		printf("t2->%d\n", t2);
+		}
+
 	}
+	i = -1;
+	while (++i < 64)
+		printf("i -> %d, w[i] -> %d\n",i, m[i]);
 
 	ctx->state[0] += a;
 	ctx->state[1] += b;

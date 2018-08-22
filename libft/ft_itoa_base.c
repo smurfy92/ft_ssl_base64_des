@@ -6,13 +6,13 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/19 09:52:39 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/19 09:52:43 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/22 12:30:30 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/libft.h"
 
-static	char	*itoa_store(long *num, int base, int *i, int *count)
+static	char	*itoa_store(intmax_t *num, int base, int *i, int *count)
 {
 	char	*new;
 	long	tmp;
@@ -37,11 +37,11 @@ static	char	*itoa_store(long *num, int base, int *i, int *count)
 	return (new);
 }
 
-char			*ft_itoa_base(int n, int base)
+char			*ft_itoa_base(intmax_t n, int base)
 {
 	char	*base_d;
 	char	*new;
-	long	num;
+	intmax_t	num;
 	int		i;
 	int		count;
 

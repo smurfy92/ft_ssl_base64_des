@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/09 11:08:41 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/21 16:57:45 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/22 12:04:13 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FT_SSL_H
@@ -59,16 +59,16 @@ typedef struct		s_opt
 
 typedef struct		s_i
 {
-	int				a;
-	int				b;
-	int				c;
-	int				d;
-	int				e;
-	int				f;
-	int				g;
-	int				h;
-	int				t;
-	int				t2;
+	unsigned int				a;
+	unsigned int				b;
+	unsigned int				c;
+	unsigned int				d;
+	unsigned int				e;
+	unsigned int				f;
+	unsigned int				g;
+	unsigned int				h;
+	unsigned int				t;
+	unsigned int				t2;
 }					t_i;
 /* 
 ** srcs/common.c

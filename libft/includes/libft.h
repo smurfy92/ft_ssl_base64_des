@@ -6,7 +6,7 @@
 /*   By: julio <julio@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/11/29 11:49:22 by jtranchi          #+#    #+#             */
-/*   Updated: 2016/11/08 17:23:42 by julio            ###   ########.fr       */
+/*   Updated: 2018/08/22 12:29:56 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int					ft_isascii(int c);
 int					ft_isdigit(int c);
 int					ft_isprint(int c);
 char				*ft_itoa(int n);
-char				*ft_itoa_base(int n, int base);
+char				*ft_itoa_base(intmax_t n, int base);
 size_t				ft_strlen(const char *s);
 void				*ft_memalloc(size_t size);
 void				*ft_memccpy(void *dst,

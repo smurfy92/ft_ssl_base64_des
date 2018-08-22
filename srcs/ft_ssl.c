@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/07 11:44:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/21 17:02:24 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/22 12:21:38 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ t_mem	*padding_sha256(t_mem *mem)
 	message->data[len] = (unsigned char)128;
 	while (++len <= newlen)
 		message->data[len] = 0;
-	printf("newlen %zu\n", newlen);
 	ft_memcpy(message->data + newlen + 7, &bitlen, 4);
 	return (message);
 }
@@ -97,14 +96,6 @@ void	hash_sha256(t_mem *mem)
 		m.f = mem->h[5];
 		m.g = mem->h[6];
 		m.h = mem->h[7];
-	printf("mem->h[0] %d\n", mem->h[0]);
-	printf("mem->h[1] %d\n", mem->h[1]);
-	printf("mem->h[2] %d\n", mem->h[2]);
-	printf("mem->h[3] %d\n", mem->h[3]);
-	printf("mem->h[4] %d\n", mem->h[4]);
-	printf("mem->h[5] %d\n", mem->h[5]);
-	printf("mem->h[6] %d\n", mem->h[6]);
-	printf("mem->h[7] %d\n", mem->h[7]);
 		i = -1;
 		while (++i < 64)
 		{
@@ -118,16 +109,6 @@ void	hash_sha256(t_mem *mem)
 			m.c = m.b;
 			m.b = m.a;
 			m.a = m.t + m.t2;
-				printf("a -> %d\n", m.a);
-				printf("b -> %d\n", m.b);
-				printf("c -> %d\n", m.c);
-				printf("d -> %d\n", m.d);
-				printf("e -> %d\n", m.e);
-				printf("f -> %d\n", m.f);
-				printf("g -> %d\n", m.g);
-				printf("h -> %d\n", m.h);
-				printf("t -> %d\n", m.t);
-				printf("t2 -> %d\n", m.t2);
 		}
 		mem->h[0] += m.a;
 		mem->h[1] += m.b;
@@ -137,15 +118,7 @@ void	hash_sha256(t_mem *mem)
 		mem->h[5] += m.f;
 		mem->h[6] += m.g;
 		mem->h[7] += m.h;
-	printf("mem->h[0] %d\n", mem->h[0]);
-	printf("mem->h[1] %d\n", mem->h[1]);
-	printf("mem->h[2] %d\n", mem->h[2]);
-	printf("mem->h[3] %d\n", mem->h[3]);
-	printf("mem->h[4] %d\n", mem->h[4]);
-	printf("mem->h[5] %d\n", mem->h[5]);
-	printf("mem->h[6] %d\n", mem->h[6]);
-	printf("mem->h[7] %d\n", mem->h[7]);
-	for (i = 0; i < 4; ++i) {
+	/*for (i = 0; i < 4; ++i) {
 		mem->data[i]      = (mem->h[0] >> (24 - i * 8)) & 0x000000ff;
 		mem->data[i + 4]  = (mem->h[1] >> (24 - i * 8)) & 0x000000ff;
 		mem->data[i + 8]  = (mem->h[2] >> (24 - i * 8)) & 0x000000ff;
@@ -154,7 +127,7 @@ void	hash_sha256(t_mem *mem)
 		mem->data[i + 20] = (mem->h[5] >> (24 - i * 8)) & 0x000000ff;
 		mem->data[i + 24] = (mem->h[6] >> (24 - i * 8)) & 0x000000ff;
 		mem->data[i + 28] = (mem->h[7] >> (24 - i * 8)) & 0x000000ff;
-	}
+	}*/
 }
 
 void	handle_stdin(t_opt *opt)

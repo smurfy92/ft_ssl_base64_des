@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/19 09:54:09 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/21 11:57:48 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/22 12:31:07 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,18 +30,18 @@ void	print_output(t_mem *mem)
 
 void	print_output_sha256(t_mem *mem)
 {
-	uint8_t	*p;
+	unsigned int *p;
 	int		i;
 	int		y;
 
 	i = -1;
-	printf("test -> %02x\n", mem->h[0]);
 	while (++i < 8)
 	{
 		y = -1;
-		p = (uint8_t *)&mem->h[i];
-		while (++y < 4)
-			ft_putstr(ft_itoa_base((int)p[y], 16));
+		p = (unsigned int *)&mem->h[i];
+		ft_putstr(ft_itoa_base((uintmax_t)mem->h[i], 16));
+		//while (++y < 4)
+		//	ft_putstr(ft_itoa_base((unsigned int)p[y], 16));
 	}
 }
 
