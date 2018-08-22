@@ -55,3 +55,21 @@ void	write_file_error(char *file, t_opt *opt)
 	ft_putstr(file);
 	ft_putendl(": No such file or directory");
 }
+
+void	write_prefix(t_opt *opt, t_arg *arg)
+{
+	if (ft_strequ(opt->hash, "md5") == 1)
+		ft_putstr("MD5 (");
+	if (ft_strequ(opt->hash, "sha256") == 1)
+		ft_putstr("SHA256 (");
+	(arg->is_string) ? (ft_putchar('"')) : 0;
+	ft_putstr(arg->str);
+	(arg->is_string) ? (ft_putchar('"')) : 0;
+	ft_putstr(") = ");
+}
+
+void	write_suffix(t_arg *arg)
+{
+	ft_putchar(' ');
+	ft_putstr(arg->str);
+}

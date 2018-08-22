@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/07 11:44:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/22 14:58:28 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/22 17:00:53 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,20 +34,6 @@ void	handle_stdin(t_opt *opt)
 	}
 	ft_putchar('\n');
 }
-void	write_prefix(t_opt *opt, char *str)
-{
-	if (ft_strequ(opt->hash, "md5") == 1)
-		ft_putstr("MD5 (");
-	if (ft_strequ(opt->hash, "sha256") == 1)
-		ft_putstr("SHA256 (");
-	ft_putstr(str);
-	ft_putstr(") = ");
-}
-void	write_suffix(char *str)
-{
-	ft_putchar(' ');
-	ft_putstr(str);
-}
 
 void	hash(t_opt *opt, t_mem *message, t_arg *arg)
 {
@@ -55,17 +41,17 @@ void	hash(t_opt *opt, t_mem *message, t_arg *arg)
 	{
 		message = padding(message);
 		hash_md5(message);
-		(!opt->r && !opt->q) ? (write_prefix(opt, arg->str)) : 0;
+		(!opt->r && !opt->q) ? (write_prefix(opt, arg)) : 0;
 		print_output(message);
-		(opt->r && !opt->q) ? (write_suffix(arg->str)) : 0;
+		(opt->r && !opt->q) ? (write_suffix(arg)) : 0;
 	}
 	if (ft_strequ(opt->hash, "sha256") == 1)
 	{
 		message = padding_sha256(message);
 		hash_sha256(message);
-		(!opt->r && !opt->q) ? (write_prefix(opt, arg->str)) : 0;
+		(!opt->r && !opt->q) ? (write_prefix(opt, arg)) : 0;
 		print_output_sha256(message);
-		(opt->r && !opt->q) ? (write_suffix(arg->str)) : 0;
+		(opt->r && !opt->q) ? (write_suffix(arg)) : 0;
 	}
 	ft_putchar('\n');
 }
@@ -76,6 +62,7 @@ void	handle_string(t_opt *opt, t_arg *arg)
 
 	message = (t_mem*)malloc(sizeof(t_mem));
 	message->data = (unsigned char*)ft_strdup(arg->str);
+	arg->is_string = 1;
 	message->len = ft_strlen((char *)message->data);
 	hash(opt, message, arg);
 }
@@ -90,14 +77,14 @@ void	handle_args(t_opt *opt)
 	arg = opt->arg;
 	while(arg)
 	{
-		if ((fd = open(arg->str, O_RDONLY)) != -1)
+		if (!arg->is_string && (fd = open(arg->str, O_RDONLY)) != -1)
 		{
 			message = read_fd(fd);
 			hash(opt, message, arg);
 		}
 		else
 		{
-			if (opt->s)
+			if (arg->is_string)
 				handle_string(opt, arg);
 			else
 				(!opt->q) ? (write_file_error(arg->str, opt)) : 0;
@@ -114,7 +101,7 @@ int		main(int argc, char **argv)
 	if (argc < 2)
 		return (print_usage(argv[0]));
 	opt = check_opt(opt, argv);
-	if (!isatty(0) || argc < 3)
+	if ((opt->p || !opt->arg))
 		handle_stdin(opt);
 	if (argc >= 3)
 		handle_args(opt);

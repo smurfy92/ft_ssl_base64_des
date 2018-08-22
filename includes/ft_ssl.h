@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/09 11:08:41 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/22 12:04:13 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/22 16:28:48 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FT_SSL_H
@@ -44,6 +44,7 @@ typedef struct		s_mem
 typedef struct		s_arg
 {
 	char			*str;
+	int				is_string;
 	struct s_arg    *next;
 }					t_arg;
 
@@ -83,8 +84,9 @@ int		print_usage(char *str);
 */
 void	print_output(t_mem *mem);
 void	print_output_sha256(t_mem *mem);
-void	print_debug(t_opt *opt);
 void	write_file_error(char *file, t_opt *opt);
+void	write_prefix(t_opt *opt, t_arg *arg);
+void	write_suffix(t_arg *arg);
 /*
 ** srcs/parsing.c
 */

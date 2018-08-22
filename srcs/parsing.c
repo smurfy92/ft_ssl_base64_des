@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/19 09:51:36 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/21 15:45:29 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/22 16:59:32 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,12 @@ t_opt	*add_arg(t_opt *opt, char *str)
 
 	arg = (t_arg*)malloc(sizeof(t_arg));
 	arg->str = ft_strdup(str);
+	arg->is_string = 0;
+	if (opt->s)
+	{
+		arg->is_string = 1;
+		opt->s = 0;
+	}
 	arg->next = NULL;
 	if (opt->arg == NULL)
 		opt->arg = arg;
@@ -39,6 +45,7 @@ t_opt	*check_options(t_opt *opt, char *str)
 
 	i = -1;
 	b = 0;
+	opt->s = 0;
 	while (str[++i])
 	{
 		if (str[0] == '-' && opt->arg == NULL)
@@ -50,7 +57,10 @@ t_opt	*check_options(t_opt *opt, char *str)
 			(str[i] == 'p') ? (opt->p = 1) : 0;
 			(str[i] == 'q') ? (opt->q = 1) : 0;
 			(str[i] == 'r') ? (opt->r = 1) : 0;
-			(str[i] == 's') ? (opt->s = 1) : 0;
+			if (str[i] == 's')
+			{
+				opt->s = 1;
+			}
 		}
 	}
 	return (opt);

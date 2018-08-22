@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/09 16:34:29 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/21 16:35:34 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/22 16:24:37 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ t_mem	*read_fd(int fd)
 	{
 		mem = ft_memjoin(mem, buf);
 		ft_bzero(buf->data, buf->len);
-		if (buf->len < BUFFER)
+		if (buf->len == 0)
 			break ;
 		buf->len = 0;
 	}
