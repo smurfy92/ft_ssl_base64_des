@@ -45,7 +45,6 @@ t_opt	*check_options(t_opt *opt, char *str)
 
 	i = -1;
 	b = 0;
-	opt->s = 0;
 	while (str[++i])
 	{
 		if (str[0] == '-' && opt->arg == NULL)
