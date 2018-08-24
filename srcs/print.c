@@ -71,5 +71,7 @@ void	write_prefix(t_opt *opt, t_arg *arg)
 void	write_suffix(t_arg *arg)
 {
 	ft_putchar(' ');
+	(arg->is_string) ? (ft_putchar('"')) : 0;
 	ft_putstr(arg->str);
+	(arg->is_string) ? (ft_putchar('"')) : 0;
 }
