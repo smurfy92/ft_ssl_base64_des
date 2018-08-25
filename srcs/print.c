@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/19 09:54:09 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/25 16:24:33 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/25 16:28:13 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,9 @@ void	print_output(t_mem *mem)
 
 void	print_output_sha256(t_mem *mem)
 {
-	unsigned int *p;
-	int		i;
-	int		y;
+	unsigned int	*p;
+	int				i;
+	int				y;
 
 	i = -1;
 	while (++i < 8)

@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/19 09:52:39 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/22 12:30:30 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/25 16:46:49 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,11 @@ static	char	*itoa_store(intmax_t *num, int base, int *i, int *count)
 
 char			*ft_itoa_base(intmax_t n, int base)
 {
-	char	*base_d;
-	char	*new;
+	char		*base_d;
+	char		*new;
 	intmax_t	num;
-	int		i;
-	int		count;
+	int			i;
+	int			count;
 
 	i = 0;
 	count = 0;

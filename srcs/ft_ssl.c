@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/07 11:44:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/25 16:24:26 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/25 16:28:40 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void	handle_args(t_opt *opt)
 
 	message = NULL;
 	arg = opt->arg;
-	while(arg)
+	while (arg)
 	{
 		if (!arg->is_string && (fd = open(arg->str, O_RDONLY)) != -1)
 		{
@@ -89,7 +89,7 @@ void	handle_args(t_opt *opt)
 			else
 				(!opt->q) ? (write_file_error(arg->str, opt)) : 0;
 		}
-		arg = arg->next;	
+		arg = arg->next;
 	}
 }
 

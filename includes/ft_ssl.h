@@ -9,6 +9,7 @@
 /*   Updated: 2018/08/22 16:28:48 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #ifndef FT_SSL_H
 # define FT_SSL_H
 
@@ -45,7 +46,7 @@ typedef struct		s_arg
 {
 	char			*str;
 	int				is_string;
-	struct s_arg    *next;
+	struct s_arg	*next;
 }					t_arg;
 
 typedef struct		s_opt
@@ -60,48 +61,36 @@ typedef struct		s_opt
 
 typedef struct		s_i
 {
-	unsigned int				a;
-	unsigned int				b;
-	unsigned int				c;
-	unsigned int				d;
-	unsigned int				e;
-	unsigned int				f;
-	unsigned int				g;
-	unsigned int				h;
-	unsigned int				t;
-	unsigned int				t2;
+	unsigned int	a;
+	unsigned int	b;
+	unsigned int	c;
+	unsigned int	d;
+	unsigned int	e;
+	unsigned int	f;
+	unsigned int	g;
+	unsigned int	h;
+	unsigned int	t;
+	unsigned int	t2;
 }					t_i;
-/* 
-** srcs/common.c
-*/
-void	ft_free_mem(t_mem *mem);
-t_mem	*ft_memjoin(t_mem *dest, t_mem *src);
-t_mem	*read_fd(int fd);
-void	write_fd(int fd, t_mem *mem);
-int		print_usage(char *str);
-/* 
-** srcs/print.c
-*/
-void	print_output(t_mem *mem);
-void	print_output_sha256(t_mem *mem);
-void	write_file_error(char *file, t_opt *opt);
-void	write_prefix(t_opt *opt, t_arg *arg);
-void	write_suffix(t_arg *arg);
-/*
-** srcs/parsing.c
-*/
-t_opt	*add_arg(t_opt *opt, char *str);
-t_opt	*check_options(t_opt *opt, char *str);
-t_opt	*check_opt(t_opt *opt, char **argv);
-/*
-** srcs/md5.c
-*/
-t_mem	*padding(t_mem *mem);
-void	md5_process(t_i *m, uint32_t *w, int i);
-void	hash_md5(t_mem *mem);
-/*
-** srcs/sha256.c
-*/
-t_mem	*padding_sha256(t_mem *mem);
-void	hash_sha256(t_mem *mem);
+
+void				ft_free_mem(t_mem *mem);
+t_mem				*ft_memjoin(t_mem *dest, t_mem *src);
+t_mem				*read_fd(int fd);
+void				write_fd(int fd, t_mem *mem);
+int					print_usage(char *str);
+void				print_output(t_mem *mem);
+void				print_output_sha256(t_mem *mem);
+void				write_file_error(char *file, t_opt *opt);
+void				write_prefix(t_opt *opt, t_arg *arg);
+void				write_suffix(t_arg *arg);
+t_opt				*add_arg(t_opt *opt, char *str);
+t_opt				*check_options(t_opt *opt, char *str);
+t_opt				*check_opt(t_opt *opt, char **argv);
+t_mem				*padding(t_mem *mem);
+void				md5_process(t_i *m, uint32_t *w, int i);
+void				hash_md5(t_mem *mem);
+t_mem				*padding_sha256(t_mem *mem);
+void				hash_sha256(t_mem *mem);
+void				init_mem(t_mem *mem);
+uint64_t			swap_uint64(uint64_t val);
 #endif
