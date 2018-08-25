@@ -50,3 +50,4 @@ while [ $I -lt ${#TEST[@]} ]; do
 	((I++))
 done
 rm file
+rm big_smoke_order_remix

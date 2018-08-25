@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/22 13:49:20 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/25 11:53:49 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/25 16:24:52 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,36 @@ unsigned int g_m[64] = {
 	0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
+uint64_t swap_uint64( uint64_t val )
+{
+	val = ((val << 8) & 0xFF00FF00FF00FF00ULL ) | ((val >> 8) & 0x00FF00FF00FF00FFULL );
+	val = ((val << 16) & 0xFFFF0000FFFF0000ULL ) | ((val >> 16) & 0x0000FFFF0000FFFFULL );
+	return (val << 32) | (val >> 32);
+}
+
+uint64_t	reverse_endian(uint64_t *b)
+{
+	uint8_t t;
+	int i = -1;
+	uint8_t *p;
+
+	p = (uint8_t *)b;
+
+	while (++i < 4)
+	{
+		t = p[i];
+		p[i] = p[7 - i];
+		p[7 - i] = t;
+	}
+	return ((uint64_t)p);
+}
+
 t_mem	*padding_sha256(t_mem *mem)
 {
 	t_mem		*message;
 	size_t		newlen;
 	size_t		len;
-	uint32_t	bitlen;
+	uint64_t	bitlen;
 
 	message = (t_mem *)malloc(sizeof(t_mem));
 	len = mem->len;
@@ -44,21 +68,39 @@ t_mem	*padding_sha256(t_mem *mem)
 	newlen = len + 1;
 	while (newlen % 64 != 56)
 		newlen++;
-	message->data = (unsigned char *)malloc(sizeof(unsigned char) *
-	newlen + 64);
+	message->data = (unsigned char *)malloc(sizeof(unsigned char) *	newlen);
 	message->len = newlen;
 	memcpy(message->data, mem->data, mem->len);
 	message->data[len] = (unsigned char)128;
 	while (++len <= newlen)
 		message->data[len] = 0;
-	ft_memcpy(message->data + newlen + 7, &bitlen, 4);
+	bitlen = swap_uint64(bitlen);
+	memcpy(message->data + newlen, &bitlen, 8);
 	return (message);
 }
 
-void	init_mem(t_mem *mem, unsigned int w[64])
+unsigned int *get_tab(unsigned char *offset)
 {
 	int i;
 	i = -1;
+	unsigned int *w;
+
+	w = (unsigned int *)malloc(sizeof(unsigned int) * 64);
+	while (++i < 64)
+	{
+		if (i < 16)
+			w[i] = (offset[i * 4] << 24) |
+				(offset[i * 4 + 1] << 16) |
+				(offset[i * 4 + 2] << 8) |
+				(offset[i* 4 + 3]);
+		else
+			w[i] = D(w[i - 2]) + w[i - 7] + C(w[i - 15]) + w[i - 16];
+	}
+	return (w);
+}
+
+void	init_mem(t_mem *mem)
+{
 	mem->h[0] = 0x6a09e667;
 	mem->h[1] = 0xbb67ae85;
 	mem->h[2] = 0x3c6ef372;
@@ -67,22 +109,12 @@ void	init_mem(t_mem *mem, unsigned int w[64])
 	mem->h[5] = 0x9b05688c;
 	mem->h[6] = 0x1f83d9ab;
 	mem->h[7] = 0x5be0cd19;
-	while (++i < 64)
-	{
-		if (i < 16)
-			w[i] = (mem->data[i * 4] << 24) |
-			(mem->data[i * 4 + 1] << 16) |
-			(mem->data[i * 4 + 2] << 8) |
-			(mem->data[i* 4 + 3]);
-		else
-			w[i] = D(w[i - 2]) + w[i - 7] + C(w[i - 15]) + w[i - 16];
-	}
 }
 
 void	sha256_process(t_i *m, unsigned int w[64], int i)
 {
 	(*m).t = (*m).h + B((*m).e) +
-	CH((*m).e,(*m).f,(*m).g) + g_m[i] + w[i];
+		CH((*m).e,(*m).f,(*m).g) + g_m[i] + w[i];
 	(*m).t2 = A((*m).a)+ MAJ((*m).a,(*m).b,(*m).c);
 	(*m).h = (*m).g;
 	(*m).g = (*m).f;
@@ -99,26 +131,34 @@ void	hash_sha256(t_mem *mem)
 {
 	t_i		m;
 	int		i;
-	unsigned int	w[64];
+	int		offset;
+	unsigned int	*w;
 
-	init_mem(mem, w);
-	m.a = mem->h[0];
-	m.b = mem->h[1];
-	m.c = mem->h[2];
-	m.d = mem->h[3];
-	m.e = mem->h[4];
-	m.f = mem->h[5];
-	m.g = mem->h[6];
-	m.h = mem->h[7];
-	i = -1;
-	while (++i < 64)
-		sha256_process(&m, w, i);
-	mem->h[0] += m.a;
-	mem->h[1] += m.b;
-	mem->h[2] += m.c;
-	mem->h[3] += m.d;
-	mem->h[4] += m.e;
-	mem->h[5] += m.f;
-	mem->h[6] += m.g;
-	mem->h[7] += m.h;
+	w = NULL;
+	offset = 0;
+	init_mem(mem);
+	while (offset < mem->len)
+	{
+		w = get_tab((mem->data + offset));
+		m.a = mem->h[0];
+		m.b = mem->h[1];
+		m.c = mem->h[2];
+		m.d = mem->h[3];
+		m.e = mem->h[4];
+		m.f = mem->h[5];
+		m.g = mem->h[6];
+		m.h = mem->h[7];
+		i = -1;
+		while (++i < 64)
+			sha256_process(&m, w, i);
+		mem->h[0] += m.a;
+		mem->h[1] += m.b;
+		mem->h[2] += m.c;
+		mem->h[3] += m.d;
+		mem->h[4] += m.e;
+		mem->h[5] += m.f;
+		mem->h[6] += m.g;
+		mem->h[7] += m.h;
+		offset += 64;
+	}
 }
