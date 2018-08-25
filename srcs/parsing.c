@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/19 09:51:36 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/22 16:59:32 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/25 16:53:13 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ t_opt		*check_opt(t_opt *opt, char **argv)
 	if (ft_strequ(opt->hash, "md5") != 1 && ft_strequ(opt->hash, "sha256") != 1)
 	{
 		ft_putendl("ft_ssl: invalid hash algorithm");
+		ft_putendl("\nMessage Digest Commands:\nmd5\nsha256");
 		exit(-1);
 	}
 	while (argv[++i])
