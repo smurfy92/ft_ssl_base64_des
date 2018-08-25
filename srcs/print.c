@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/19 09:54:09 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/22 14:35:54 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/25 12:02:06 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,10 @@ void	print_output_sha256(t_mem *mem)
 	i = -1;
 	while (++i < 8)
 	{
-		y = -1;
 		p = (unsigned int *)&mem->h[i];
+		y = ft_strlen(ft_itoa_base((uintmax_t)mem->h[i], 16));
+		while (y++ < 8)
+			ft_putchar('0');
 		ft_putstr(ft_itoa_base((uintmax_t)mem->h[i], 16));
 	}
 }
