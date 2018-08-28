@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/19 09:50:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/28 13:51:31 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/28 17:34:15 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ t_mem	*padding(t_mem *mem)
 	while (++len <= newlen)
 		message->data[len] = 0;
 	ft_memcpy(message->data + newlen, &bitlen, 4);
+	ft_free_mem(mem);
 	return (message);
 }
 

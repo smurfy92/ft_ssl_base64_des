@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/19 09:54:09 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/28 15:29:50 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/28 17:33:57 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,10 @@
 
 void	print_output(t_mem *mem)
 {
-	uint8_t	*p;
-	int		i;
-	int		y;
+	uint8_t			*p;
+	int				i;
+	int				y;
+	char			*tmp;
 
 	i = -1;
 	while (++i < 4)
@@ -25,9 +26,11 @@ void	print_output(t_mem *mem)
 		p = (uint8_t *)&mem->h[i];
 		while (++y < 4)
 		{
-			if (ft_strlen(ft_itoa_base((int)p[y], 16)) == 1)
+			tmp = ft_itoa_base((int)p[y], 16);
+			if (ft_strlen(tmp) == 1)
 				ft_putchar('0');
-			ft_putstr(ft_itoa_base((int)p[y], 16));
+			ft_putstr(tmp);
+			ft_strdel(&tmp);
 		}
 	}
 }
@@ -37,15 +40,18 @@ void	print_output_sha256(t_mem *mem)
 	unsigned int	*p;
 	int				i;
 	int				y;
+	char			*tmp;
 
 	i = -1;
 	while (++i < 8)
 	{
 		p = (unsigned int *)&mem->h[i];
-		y = ft_strlen(ft_itoa_base((uintmax_t)mem->h[i], 16));
+		tmp = ft_itoa_base((uintmax_t)mem->h[i], 16);
+		y = ft_strlen(tmp);
 		while (y++ < 8)
 			ft_putchar('0');
-		ft_putstr(ft_itoa_base((uintmax_t)mem->h[i], 16));
+		ft_putstr(tmp);
+		ft_strdel(&tmp);
 	}
 }
 
@@ -63,7 +69,7 @@ void	write_prefix(t_opt *opt, t_arg *arg)
 	if (ft_strequ(HASH[opt->hash], "md5") == 1)
 		ft_putstr("MD5 (");
 	if (ft_strequ(HASH[opt->hash], "sha256") == 1)
-		ft_putstr("SHA256 ");
+		ft_putstr("SHA256 (");
 	(arg->is_string) ? (ft_putchar('"')) : 0;
 	ft_putstr(arg->str);
 	(arg->is_string) ? (ft_putchar('"')) : 0;

@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/22 13:49:20 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/25 16:35:00 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/28 17:34:58 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ t_mem			*padding_sha256(t_mem *mem)
 		message->data[len] = 0;
 	bitlen = swap_uint64(bitlen);
 	memcpy(message->data + newlen, &bitlen, 8);
+	ft_free_mem(mem);
 	return (message);
 }
 
