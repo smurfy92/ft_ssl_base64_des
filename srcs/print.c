@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/19 09:54:09 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/25 16:49:56 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/28 15:29:50 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	print_output_sha256(t_mem *mem)
 void	write_file_error(char *file, t_opt *opt)
 {
 	ft_putstr("ft_ssl: ");
-	ft_putstr(opt->hash);
+	ft_putstr(HASH[opt->hash]);
 	ft_putstr(": ");
 	ft_putstr(file);
 	ft_putendl(": No such file or directory");
@@ -60,10 +60,10 @@ void	write_file_error(char *file, t_opt *opt)
 
 void	write_prefix(t_opt *opt, t_arg *arg)
 {
-	if (ft_strequ(opt->hash, "md5") == 1)
+	if (ft_strequ(HASH[opt->hash], "md5") == 1)
 		ft_putstr("MD5 (");
-	if (ft_strequ(opt->hash, "sha256") == 1)
-		ft_putstr("SHA256 (");
+	if (ft_strequ(HASH[opt->hash], "sha256") == 1)
+		ft_putstr("SHA256 ");
 	(arg->is_string) ? (ft_putchar('"')) : 0;
 	ft_putstr(arg->str);
 	(arg->is_string) ? (ft_putchar('"')) : 0;

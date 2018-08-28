@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/09 16:34:29 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/25 16:50:19 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/28 14:27:55 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,11 @@ t_mem	*read_fd(int fd)
 		buf->len = 0;
 	}
 	if (!mem)
+	{
+		free(buf->data);
+		buf->data = (unsigned char *)ft_strdup("\0");
 		return (buf);
+	}
 	ft_free_mem(buf);
 	return (mem);
 }

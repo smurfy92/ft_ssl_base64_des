@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/09 11:08:41 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/28 12:51:22 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/28 15:21:29 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ typedef struct		s_arg
 
 typedef struct		s_opt
 {
-	char			*hash;
+	int				hash;
 	struct s_arg	*arg;
 	int				p;
 	int				q;

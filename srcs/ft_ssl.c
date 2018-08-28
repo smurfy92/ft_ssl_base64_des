@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/07 11:44:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/28 12:51:24 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/28 15:25:43 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,42 +19,24 @@ t_print			g_print[] = {print_output, print_output_sha256};
 void	handle_stdin(t_opt *opt)
 {
 	t_mem *message;
-	int i = -1;
 
 	message = NULL;
 	message = read_fd(0);
 	if (opt->p)
 		ft_putstr((char *)message->data);
-	while (HASH[++i])
-	{
-		if (ft_strequ(HASH[i], opt->hash))
-		{
-			message = g_paddings[i](message);
-			g_hash[i](message);
-			g_print[i](message);
-		}
-	}
+	message = g_paddings[opt->hash](message);
+	g_hash[opt->hash](message);
+	g_print[opt->hash](message);
 	ft_putchar('\n');
 }
 
 void	hash(t_opt *opt, t_mem *message, t_arg *arg)
 {
-	if (ft_strequ(opt->hash, "md5") == 1)
-	{
-		message = padding(message);
-		hash_md5(message);
-		(!opt->r && !opt->q) ? (write_prefix(opt, arg)) : 0;
-		print_output(message);
-		(opt->r && !opt->q) ? (write_suffix(arg)) : 0;
-	}
-	if (ft_strequ(opt->hash, "sha256") == 1)
-	{
-		message = padding_sha256(message);
-		hash_sha256(message);
-		(!opt->r && !opt->q) ? (write_prefix(opt, arg)) : 0;
-		print_output_sha256(message);
-		(opt->r && !opt->q) ? (write_suffix(arg)) : 0;
-	}
+	message = g_paddings[opt->hash](message);
+	g_hash[opt->hash](message);
+	(!opt->r && !opt->q) ? (write_prefix(opt, arg)) : 0;
+	g_print[opt->hash](message);
+	(opt->r && !opt->q) ? (write_suffix(arg)) : 0;
 	ft_putchar('\n');
 }
 
@@ -103,7 +85,7 @@ int		main(int argc, char **argv)
 	if (argc < 2)
 		return (print_usage(argv[0]));
 	opt = check_opt(opt, argv);
-	if ((opt->p || !opt->arg))
+	if (opt->p || !opt->arg)
 		handle_stdin(opt);
 	if (argc >= 3)
 		handle_args(opt);
