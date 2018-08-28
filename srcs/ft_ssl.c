@@ -6,31 +6,33 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/07 11:44:07 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/25 16:28:40 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/28 12:49:02 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ft_ssl.h"
 
+t_padding		g_paddings[] = {padding, padding_sha256};
+t_hash			g_hash[] = {hash_md5, hash_sha256};
+t_print			g_print[] = {print_output, print_output_sha256};
+
 void	handle_stdin(t_opt *opt)
 {
 	t_mem *message;
+	int i = -1;
 
 	message = NULL;
 	message = read_fd(0);
 	if (opt->p)
 		ft_putstr((char *)message->data);
-	if (ft_strequ(opt->hash, "md5") == 1)
+	while (HASH[++i])
 	{
-		message = padding(message);
-		hash_md5(message);
-		print_output(message);
-	}
-	if (ft_strequ(opt->hash, "sha256") == 1)
-	{
-		message = padding_sha256(message);
-		hash_sha256(message);
-		print_output_sha256(message);
+		if (ft_strequ(HASH[i], opt->hash))
+		{
+			message = g_paddings[i](message);
+			g_hash[i](message);
+			g_print[i](message);
+		}
 	}
 	ft_putchar('\n');
 }

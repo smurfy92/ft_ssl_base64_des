@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/09 11:08:41 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/22 16:28:48 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/28 12:46:47 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # define B(x) (ROTR(x, 6) ^ ROTR(x, 11) ^ ROTR(x, 25))
 # define C(x) (ROTR(x, 7) ^ ROTR(x, 18) ^ SHR(x, 3))
 # define D(x) (ROTR(x, 17) ^ ROTR(x, 19) ^ SHR(x, 10))
+#define HASH (const char*[2]){"md5", "sha256"}
 
 # define DEBUG 1
 # define BUFFER 1024
@@ -34,6 +35,8 @@
 # include "../libft/includes/libft.h"
 # include <errno.h>
 # include <string.h>
+
+
 
 typedef struct		s_mem
 {
@@ -72,6 +75,11 @@ typedef struct		s_i
 	unsigned int	t;
 	unsigned int	t2;
 }					t_i;
+
+typedef t_mem       *(*t_padding)(t_mem *mem);
+typedef void       (*t_hash)(t_mem *mem);
+typedef void       (*t_print)(t_mem *mem);
+
 
 void				ft_free_mem(t_mem *mem);
 t_mem				*ft_memjoin(t_mem *dest, t_mem *src);
