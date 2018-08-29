@@ -77,7 +77,6 @@ typedef t_mem		*(*t_padding)(t_mem *mem);
 typedef void		(*t_hash)(t_mem *mem);
 typedef void		(*t_print)(t_mem *mem);
 
-
 void				ft_free_mem(t_mem *mem);
 t_mem				*ft_memjoin(t_mem *dest, t_mem *src);
 t_mem				*read_fd(int fd);

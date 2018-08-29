@@ -73,7 +73,7 @@ int			get_hash_index(char *hash)
 	while (HASH[++i])
 	{
 		if (ft_strequ(HASH[i], hash))
-			return (i) ;
+			return (i);
 	}
 	return (-1);
 }
@@ -111,13 +111,4 @@ void		init_mem(t_mem *mem)
 	mem->h[5] = 0x9b05688c;
 	mem->h[6] = 0x1f83d9ab;
 	mem->h[7] = 0x5be0cd19;
-}
-
-uint64_t	swap_uint64(uint64_t val)
-{
-	val = ((val << 8) & 0xFF00FF00FF00FF00ULL) |
-	((val >> 8) & 0x00FF00FF00FF00FFULL);
-	val = ((val << 16) & 0xFFFF0000FFFF0000ULL) |
-	((val >> 16) & 0x0000FFFF0000FFFFULL);
-	return (val << 32) | (val >> 32);
 }

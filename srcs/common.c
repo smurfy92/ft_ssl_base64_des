@@ -6,7 +6,7 @@
 /*   By: jtranchi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/09 16:34:29 by jtranchi          #+#    #+#             */
-/*   Updated: 2018/08/28 18:06:45 by jtranchi         ###   ########.fr       */
+/*   Updated: 2018/08/29 14:11:30 by jtranchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	ft_free_mem(t_mem *mem)
 {
-	ft_strdel((char **)&mem->data);
+	free(mem->data);
 	free(mem);
 }
 
