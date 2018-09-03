@@ -28,7 +28,7 @@
 # define D(x) (ROTR(x, 17) ^ ROTR(x, 19) ^ SHR(x, 10))
 # define HASH (const char*[3]){"md5", "sha256", NULL}
 # define DEBUG 1
-# define BUFFER 2
+# define BUFFER 1024
 # include <stdint.h>
 # include <stdio.h>
 # include "../libft/includes/libft.h"
