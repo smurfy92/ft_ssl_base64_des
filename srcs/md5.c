@@ -52,7 +52,7 @@ t_mem	*padding(t_mem *mem)
 	newlen = len + 1;
 	while (newlen % 64 != 56)
 		newlen++;
-	message->data = (unsigned char *)malloc(sizeof(char) * newlen + 64);
+	message->data = (unsigned char *)ft_strnew(newlen + 64);
 	message->len = newlen;
 	memcpy(message->data, mem->data, mem->len);
 	message->data[len] = (char)128;

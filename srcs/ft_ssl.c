@@ -27,6 +27,7 @@ void	handle_stdin(t_opt *opt)
 	message = g_paddings[opt->hash](message);
 	g_hash[opt->hash](message);
 	g_print[opt->hash](message);
+	ft_free_mem(message);
 	ft_putchar('\n');
 }
 
@@ -37,6 +38,7 @@ void	hash(t_opt *opt, t_mem *message, t_arg *arg)
 	(!opt->r && !opt->q) ? (write_prefix(opt, arg)) : 0;
 	g_print[opt->hash](message);
 	(opt->r && !opt->q) ? (write_suffix(arg)) : 0;
+	ft_free_mem(message);
 	ft_putchar('\n');
 }
 
