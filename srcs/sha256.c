@@ -108,7 +108,7 @@ void			hash_start(t_i *m, t_mem *mem, unsigned int *w)
 		sha256_process(m, w, i);
 }
 
-void			hash_sha256(t_mem *mem)
+void			hash_sha256(t_mem *mem, t_opt *opt)
 {
 	t_i				m;
 	int				offset;
@@ -116,6 +116,7 @@ void			hash_sha256(t_mem *mem)
 
 	w = NULL;
 	offset = 0;
+	mem = padding_sha256(mem);
 	init_mem(mem);
 	while (offset < mem->len)
 	{
@@ -131,4 +132,6 @@ void			hash_sha256(t_mem *mem)
 		mem->h[7] += m.h;
 		offset += 64;
 	}
+	print_output_sha256(mem, opt);
+	ft_free_mem(mem);
 }

@@ -35,7 +35,7 @@ int32_t g_k[64] = {
 	0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
 	0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391};
 
-t_mem	*padding(t_mem *mem)
+t_mem	*padding_md5(t_mem *mem)
 {
 	t_mem		*message;
 	size_t		newlen;
@@ -85,13 +85,14 @@ void	md5_process(t_i *m, uint32_t *w, int i)
 	(*m).a = (*m).t;
 }
 
-void	hash_md5(t_mem *mem)
+void	hash_md5(t_mem *mem, t_opt * opt)
 {
 	int			offset;
 	int			i;
 	t_i			m;
 	uint32_t	*w;
 
+	mem = padding_md5(mem);
 	offset = 0;
 	while (offset < mem->len)
 	{
@@ -109,4 +110,6 @@ void	hash_md5(t_mem *mem)
 		mem->h[3] += m.d;
 		offset += 64;
 	}
+	print_output_md5(mem, opt);
+	ft_free_mem(mem);
 }

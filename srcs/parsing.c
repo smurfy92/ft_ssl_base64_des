@@ -56,6 +56,7 @@ t_opt		*check_options(t_opt *opt, char *str)
 			(str[i] == 'p') ? (opt->p = 1) : 0;
 			(str[i] == 'q') ? (opt->q = 1) : 0;
 			(str[i] == 'r') ? (opt->r = 1) : 0;
+			(str[i] == 'd') ? (opt->d = 1) : 0;
 			if (str[i] == 's')
 			{
 				opt->s = 1;
@@ -89,6 +90,8 @@ t_opt		*check_opt(t_opt *opt, char **argv)
 	opt->q = 0;
 	opt->r = 0;
 	opt->s = 0;
+	opt->d = 0;
+	opt->stdin = 1;
 	opt->arg = NULL;
 	if (opt->hash == -1)
 	{

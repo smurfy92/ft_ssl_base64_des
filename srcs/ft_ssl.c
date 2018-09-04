@@ -12,9 +12,7 @@
 
 #include "../includes/ft_ssl.h"
 
-t_padding		g_paddings[] = {padding, padding_sha256};
-t_hash			g_hash[] = {hash_md5, hash_sha256};
-t_print			g_print[] = {print_output, print_output_sha256};
+t_hash			g_hash[] = {hash_md5, hash_sha256, hash_base64};
 
 void	handle_stdin(t_opt *opt)
 {
@@ -24,58 +22,48 @@ void	handle_stdin(t_opt *opt)
 	message = read_fd(0);
 	if (opt->p)
 		ft_putstr((char *)message->data);
-	message = g_paddings[opt->hash](message);
-	g_hash[opt->hash](message);
-	g_print[opt->hash](message);
-	ft_free_mem(message);
+	g_hash[opt->hash](message, opt);
 	ft_putchar('\n');
 }
 
-void	hash(t_opt *opt, t_mem *message, t_arg *arg)
+void	hash(t_opt *opt, t_mem *message)
 {
-	message = g_paddings[opt->hash](message);
-	g_hash[opt->hash](message);
-	(!opt->r && !opt->q) ? (write_prefix(opt, arg)) : 0;
-	g_print[opt->hash](message);
-	(opt->r && !opt->q) ? (write_suffix(arg)) : 0;
-	ft_free_mem(message);
+	g_hash[opt->hash](message, opt);
 	ft_putchar('\n');
 }
 
-void	handle_string(t_opt *opt, t_arg *arg)
+void	handle_string(t_opt *opt)
 {
 	t_mem *message;
 
 	message = (t_mem*)malloc(sizeof(t_mem));
-	message->data = (unsigned char*)ft_strdup(arg->str);
-	arg->is_string = 1;
+	message->data = (unsigned char*)ft_strdup(opt->arg->str);
+	opt->arg->is_string = 1;
 	message->len = ft_strlen((char *)message->data);
-	hash(opt, message, arg);
+	hash(opt, message);
 }
 
 void	handle_args(t_opt *opt)
 {
-	t_arg	*arg;
 	t_mem	*message;
 	int		fd;
 
 	message = NULL;
-	arg = opt->arg;
-	while (arg)
+	while (opt->arg)
 	{
-		if (!arg->is_string && (fd = open(arg->str, O_RDONLY)) != -1)
+		if (!opt->arg->is_string && (fd = open(opt->arg->str, O_RDONLY)) != -1)
 		{
 			message = read_fd(fd);
-			hash(opt, message, arg);
+			hash(opt, message);
 		}
 		else
 		{
-			if (arg->is_string)
-				handle_string(opt, arg);
+			if (opt->arg->is_string)
+				handle_string(opt);
 			else
-				(!opt->q) ? (write_file_error(arg->str, opt)) : 0;
+				(!opt->q) ? (write_file_error(opt->arg->str, opt)) : 0;
 		}
-		arg = arg->next;
+		opt->arg = opt->arg->next;
 	}
 }
 
@@ -89,6 +77,7 @@ int		main(int argc, char **argv)
 	opt = check_opt(opt, argv);
 	if (opt->p || !opt->arg)
 		handle_stdin(opt);
+	opt->stdin = 0;
 	if (argc >= 3)
 		handle_args(opt);
 	return (0);

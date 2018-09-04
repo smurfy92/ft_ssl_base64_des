@@ -5,6 +5,7 @@ SRC += parsing.c
 SRC += print.c
 SRC += sha256.c
 SRC += utils.c
+SRC += base64.c
 
 NAME = ft_ssl
 

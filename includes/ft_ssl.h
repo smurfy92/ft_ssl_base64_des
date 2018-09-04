@@ -26,7 +26,7 @@
 # define B(x) (ROTR(x, 6) ^ ROTR(x, 11) ^ ROTR(x, 25))
 # define C(x) (ROTR(x, 7) ^ ROTR(x, 18) ^ SHR(x, 3))
 # define D(x) (ROTR(x, 17) ^ ROTR(x, 19) ^ SHR(x, 10))
-# define HASH (const char*[3]){"md5", "sha256", NULL}
+# define HASH (const char*[5]){"md5", "sha256", "base64", "des", NULL}
 # define DEBUG 1
 # define BUFFER 1024
 # include <stdint.h>
@@ -53,7 +53,9 @@ typedef struct		s_opt
 {
 	int				hash;
 	struct s_arg	*arg;
+	int				stdin;
 	int				p;
+	int				d;
 	int				q;
 	int				r;
 	int				s;
@@ -73,28 +75,29 @@ typedef struct		s_i
 	unsigned int	t2;
 }					t_i;
 
-typedef t_mem		*(*t_padding)(t_mem *mem);
-typedef void		(*t_hash)(t_mem *mem);
-typedef void		(*t_print)(t_mem *mem);
+typedef void		(*t_hash)(t_mem *mem, t_opt *opt);
 
 void				ft_free_mem(t_mem *mem);
 t_mem				*ft_memjoin(t_mem *dest, t_mem *src);
 t_mem				*read_fd(int fd);
 void				write_fd(int fd, t_mem *mem);
 int					print_usage(char *str);
-void				print_output(t_mem *mem);
-void				print_output_sha256(t_mem *mem);
+void				print_output_md5(t_mem *mem, t_opt *opt);
+void				print_output_sha256(t_mem *mem, t_opt *opt);
 void				write_file_error(char *file, t_opt *opt);
 void				write_prefix(t_opt *opt, t_arg *arg);
 void				write_suffix(t_arg *arg);
 t_opt				*add_arg(t_opt *opt, char *str);
 t_opt				*check_options(t_opt *opt, char *str);
 t_opt				*check_opt(t_opt *opt, char **argv);
-t_mem				*padding(t_mem *mem);
+t_mem				*padding_md5(t_mem *mem);
 void				md5_process(t_i *m, uint32_t *w, int i);
-void				hash_md5(t_mem *mem);
+void				hash_md5(t_mem *mem, t_opt *opt);
 t_mem				*padding_sha256(t_mem *mem);
-void				hash_sha256(t_mem *mem);
+void				hash_sha256(t_mem *mem, t_opt *opt);
 void				init_mem(t_mem *mem);
 uint64_t			swap_uint64(uint64_t val);
+void				print_output_base64(t_mem *mem);
+t_mem				*padding_base64(t_mem *mem);
+void				hash_base64(t_mem *mem, t_opt *opt);
 #endif

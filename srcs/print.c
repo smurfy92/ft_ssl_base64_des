@@ -12,7 +12,7 @@
 
 #include "../includes/ft_ssl.h"
 
-void	print_output(t_mem *mem)
+void	print_output_md5(t_mem *mem, t_opt *opt)
 {
 	uint8_t			*p;
 	int				i;
@@ -20,6 +20,7 @@ void	print_output(t_mem *mem)
 	char			*tmp;
 
 	i = -1;
+	(!opt->stdin && !opt->r && !opt->q) ? (write_prefix(opt, opt->arg)) : 0;
 	while (++i < 4)
 	{
 		y = -1;
@@ -33,15 +34,17 @@ void	print_output(t_mem *mem)
 			ft_strdel(&tmp);
 		}
 	}
+	(!opt->stdin && opt->r && !opt->q) ? (write_suffix(opt->arg)) : 0;
 }
 
-void	print_output_sha256(t_mem *mem)
+void	print_output_sha256(t_mem *mem, t_opt *opt)
 {
 	unsigned int	*p;
 	int				i;
 	int				y;
 	char			*tmp;
 
+	(!opt->stdin && !opt->r && !opt->q) ? (write_prefix(opt, opt->arg)) : 0;
 	i = -1;
 	while (++i < 8)
 	{
@@ -53,6 +56,7 @@ void	print_output_sha256(t_mem *mem)
 		ft_putstr(tmp);
 		ft_strdel(&tmp);
 	}
+	(!opt->stdin && opt->r && !opt->q) ? (write_suffix(opt->arg)) : 0;
 }
 
 void	write_file_error(char *file, t_opt *opt)
