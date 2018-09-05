@@ -53,12 +53,16 @@ typedef struct		s_opt
 {
 	int				hash;
 	struct s_arg	*arg;
+	char			*output;
 	int				stdin;
 	int				p;
 	int				d;
+	int				i;
+	int				o;
 	int				q;
 	int				r;
 	int				s;
+	int				fd;
 }					t_opt;
 
 typedef struct		s_i

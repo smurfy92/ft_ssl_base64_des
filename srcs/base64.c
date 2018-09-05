@@ -43,7 +43,7 @@ t_mem	*padding_base64(t_mem *mem)
 	return (mem);
 }
 
-void	base64_encode(t_mem *mem)
+void	base64_encode(t_mem *mem, t_opt *opt)
 {
 	int i;
 	int tmp;
@@ -55,29 +55,29 @@ void	base64_encode(t_mem *mem)
 	{
 		tmp = 0;
 		tmp = (mem->data[i] << 16) | (mem->data[i + 1] << 8) | (mem->data[i + 2]);
-		ft_putchar(g_base64[(tmp >> 18) & 0x3F]);
-		ft_putchar(g_base64[(tmp >> 12) & 0x3F]);
-		ft_putchar(g_base64[(tmp >> 6) & 0x3F]);
-		ft_putchar(g_base64[tmp & 0x3F]);
+		ft_putchar_fd(g_base64[(tmp >> 18) & 0x3F], (opt->fd > 1) ? opt->fd : 1);
+		ft_putchar_fd(g_base64[(tmp >> 12) & 0x3F], (opt->fd > 1) ? opt->fd : 1);
+		ft_putchar_fd(g_base64[(tmp >> 6) & 0x3F], (opt->fd > 1) ? opt->fd : 1);
+		ft_putchar_fd(g_base64[tmp & 0x3F], (opt->fd > 1) ? opt->fd : 1);
 		i += 3;
 	}
 	if (mem->len % 3 == 1)
 	{
 		tmp = 0;
 		tmp = mem->data[i] << 4;
-		ft_putchar(g_base64[(tmp >> 6) & 0x3F]);
-		ft_putchar(g_base64[tmp & 0x3F]);
-		ft_putchar('=');
-		ft_putchar('=');
+		ft_putchar_fd(g_base64[(tmp >> 6) & 0x3F], (opt->fd > 1) ? opt->fd : 1);
+		ft_putchar_fd(g_base64[tmp & 0x3F], (opt->fd > 1) ? opt->fd : 1);
+		ft_putchar_fd('=', (opt->fd > 1) ? opt->fd : 1);
+		ft_putchar_fd('=', (opt->fd > 1) ? opt->fd : 1);
 	}
 	if (mem->len % 3 == 2)
 	{
 		tmp = 0;
 		tmp = (mem->data[i] << 10) | (mem->data[i + 1] << 2);
-		ft_putchar(g_base64[(tmp >> 12) & 0x3F]);
-		ft_putchar(g_base64[(tmp >> 6) & 0x3F]);
-		ft_putchar(g_base64[tmp & 0x3F]);
-		ft_putchar('=');
+		ft_putchar_fd(g_base64[(tmp >> 12) & 0x3F], (opt->fd > 1) ? opt->fd : 1);
+		ft_putchar_fd(g_base64[(tmp >> 6) & 0x3F], (opt->fd > 1) ? opt->fd : 1);
+		ft_putchar_fd(g_base64[tmp & 0x3F], (opt->fd > 1) ? opt->fd : 1);
+		ft_putchar_fd('=', (opt->fd > 1) ? opt->fd : 1);
 	}
 }
 
@@ -101,6 +101,12 @@ void	clean_string(t_mem *mem)
 	i = 0;
 	while (i < mem->len)
 	{
+		if (mem->data[i] == '=')
+		{
+			mem->len = i;
+			mem->data[i] = 0;
+			break ;
+		}
 		if (!ft_isalpha(mem->data[i]) && !ft_isdigit(mem->data[i]))
 		{
 			if (i != mem->len - 1)
@@ -117,7 +123,7 @@ void	clean_string(t_mem *mem)
 	}
 }
 
-void	base64_decode(t_mem *mem)
+void	base64_decode(t_mem *mem, t_opt *opt)
 {
 	int i;
 	int len;
@@ -134,7 +140,7 @@ void	base64_decode(t_mem *mem)
 		tmp[0] = (get_value(mem->data[i]) << 2) | (get_value(mem->data[i + 1]) >> 4);
 		tmp[1] = (get_value(mem->data[i + 1]) << 4) | (get_value(mem->data[i + 2]) >> 2);
 		tmp[2] = (get_value(mem->data[i + 2]) << 6) | (get_value(mem->data[i + 3]));
-		ft_putstr(tmp);
+		ft_putstr_fd(tmp, (opt->fd > 1) ? opt->fd : 1);
 		i += 4;
 	}
 	if (mem->len % 4 == 2)
@@ -142,22 +148,22 @@ void	base64_decode(t_mem *mem)
 		tmp = ft_strnew(3);
 		tmp[0] = (get_value(mem->data[i]) << 2) | (get_value(mem->data[i + 1]) >> 4);
 		tmp[1] = (get_value(mem->data[i + 1]) & 0xF);
-		ft_putstr(tmp);
+		ft_putstr_fd(tmp, (opt->fd > 1) ? opt->fd : 1);
 	}
 	else if (mem->len % 4 == 3)
 	{
 		tmp = ft_strnew(3);
 		tmp[0] = (get_value(mem->data[i]) << 2) | (get_value(mem->data[i + 1]) >> 4);
 		tmp[1] = (get_value(mem->data[i + 1]) << 4) | (get_value(mem->data[i + 2]) >> 2);
-		tmp[2] = (get_value(mem->data[i + 3]) & 0x3);
-		ft_putstr(tmp);
+		tmp[2] = (get_value(mem->data[i + 2]) << 6);
+		ft_putstr_fd(tmp, (opt->fd > 1) ? opt->fd : 1);
 	}
 }
 
 void	hash_base64(t_mem *mem, t_opt *opt)
 {
 	if (!opt->d)
-	 	base64_encode(mem);
+	 	base64_encode(mem, opt);
 	else
-		base64_decode(mem);
+		base64_decode(mem, opt);
 }

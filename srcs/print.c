@@ -35,6 +35,7 @@ void	print_output_md5(t_mem *mem, t_opt *opt)
 		}
 	}
 	(!opt->stdin && opt->r && !opt->q) ? (write_suffix(opt->arg)) : 0;
+	ft_putchar('\n');
 }
 
 void	print_output_sha256(t_mem *mem, t_opt *opt)
@@ -57,6 +58,7 @@ void	print_output_sha256(t_mem *mem, t_opt *opt)
 		ft_strdel(&tmp);
 	}
 	(!opt->stdin && opt->r && !opt->q) ? (write_suffix(opt->arg)) : 0;
+	ft_putchar('\n');
 }
 
 void	write_file_error(char *file, t_opt *opt)

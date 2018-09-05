@@ -23,13 +23,11 @@ void	handle_stdin(t_opt *opt)
 	if (opt->p)
 		ft_putstr((char *)message->data);
 	g_hash[opt->hash](message, opt);
-	ft_putchar('\n');
 }
 
 void	hash(t_opt *opt, t_mem *message)
 {
 	g_hash[opt->hash](message, opt);
-	ft_putchar('\n');
 }
 
 void	handle_string(t_opt *opt)
@@ -67,6 +65,16 @@ void	handle_args(t_opt *opt)
 	}
 }
 
+void	create_pipe(t_opt *opt)
+{
+	if ((opt->fd = open(opt->output, O_WRONLY | O_CREAT, 0755)) == -1)
+	{
+		ft_putstr("ft_ssl: error opening file: ");
+		ft_putendl(opt->output);
+		exit(-1);
+	}
+}
+
 int		main(int argc, char **argv)
 {
 	t_opt	*opt;
@@ -75,6 +83,8 @@ int		main(int argc, char **argv)
 	if (argc < 2)
 		return (print_usage(argv[0]));
 	opt = check_opt(opt, argv);
+	if (opt->output)
+		create_pipe(opt);
 	if (opt->p || !opt->arg)
 		handle_stdin(opt);
 	opt->stdin = 0;
