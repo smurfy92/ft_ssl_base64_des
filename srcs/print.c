@@ -12,6 +12,14 @@
 
 #include "../includes/ft_ssl.h"
 
+char g_base64[64] = {
+	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+	'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
+	'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+	'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+	'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5',
+	'6', '7', '8', '9', '+', '/'};
+
 void	print_output_md5(t_mem *mem, t_opt *opt)
 {
 	uint8_t			*p;
@@ -61,31 +69,68 @@ void	print_output_sha256(t_mem *mem, t_opt *opt)
 	ft_putchar('\n');
 }
 
-void	write_file_error(char *file, t_opt *opt)
+void	print_base64_encode(t_opt *opt, int value, int which)
 {
-	ft_putstr("ft_ssl: ");
-	ft_putstr(HASH[opt->hash]);
-	ft_putstr(": ");
-	ft_putstr(file);
-	ft_putendl(": No such file or directory");
+	if (which == 0)
+	{
+		ft_putchar_fd(g_base64[(value >> 18) & 0x3F], opt->fd);
+		ft_putchar_fd(g_base64[(value >> 12) & 0x3F], opt->fd);
+		ft_putchar_fd(g_base64[(value >> 6) & 0x3F], opt->fd);
+		ft_putchar_fd(g_base64[value & 0x3F], opt->fd);
+	}
+	if (which == 1)
+	{
+		ft_putchar_fd(g_base64[(value >> 6) & 0x3F], opt->fd);
+		ft_putchar_fd(g_base64[value & 0x3F], opt->fd);
+		ft_putchar_fd('=', opt->fd);
+		ft_putchar_fd('=', opt->fd);
+	}
+	if (which == 2)
+	{
+		ft_putchar_fd(g_base64[(value >> 12) & 0x3F], opt->fd);
+		ft_putchar_fd(g_base64[(value >> 6) & 0x3F], opt->fd);
+		ft_putchar_fd(g_base64[value & 0x3F], opt->fd);
+		ft_putchar_fd('=', opt->fd);
+	}
 }
 
-void	write_prefix(t_opt *opt, t_arg *arg)
+int		get_value(char c)
 {
-	if (ft_strequ(HASH[opt->hash], "md5") == 1)
-		ft_putstr("MD5 (");
-	if (ft_strequ(HASH[opt->hash], "sha256") == 1)
-		ft_putstr("SHA256 (");
-	(arg->is_string) ? (ft_putchar('"')) : 0;
-	ft_putstr(arg->str);
-	(arg->is_string) ? (ft_putchar('"')) : 0;
-	ft_putstr(") = ");
+	int i;
+
+	i = -1;
+	while (++i < 64)
+	{
+		if (g_base64[i] == c)
+			return (i);
+	}
+	return (-1);
 }
 
-void	write_suffix(t_arg *arg)
+void	print_base64_decode(t_opt *opt, t_mem *mem, int i, int which)
 {
-	ft_putchar(' ');
-	(arg->is_string) ? (ft_putchar('"')) : 0;
-	ft_putstr(arg->str);
-	(arg->is_string) ? (ft_putchar('"')) : 0;
+	char *tmp;
+
+	tmp = ft_strnew(3);
+	tmp[0] = (get_value(mem->data[i]) << 2) |
+	(get_value(mem->data[i + 1]) >> 4);
+	if (which == 0)
+	{
+		tmp[1] = (get_value(mem->data[i + 1]) << 4) |
+		(get_value(mem->data[i + 2]) >> 2);
+		tmp[2] = (get_value(mem->data[i + 2]) << 6) |
+		(get_value(mem->data[i + 3]));
+	}
+	if (which == 1)
+		tmp[1] = (get_value(mem->data[i + 1]) & 0xF);
+	if (which == 2)
+	{
+		tmp[0] = (get_value(mem->data[i]) << 2) |
+		(get_value(mem->data[i + 1]) >> 4);
+		tmp[1] = (get_value(mem->data[i + 1]) << 4) |
+		(get_value(mem->data[i + 2]) >> 2);
+		tmp[2] = (get_value(mem->data[i + 2]) << 6);
+	}
+	ft_putstr_fd(tmp, opt->fd);
+	free(&tmp);
 }

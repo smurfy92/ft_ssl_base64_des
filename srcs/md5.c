@@ -85,7 +85,7 @@ void	md5_process(t_i *m, uint32_t *w, int i)
 	(*m).a = (*m).t;
 }
 
-void	hash_md5(t_mem *mem, t_opt * opt)
+void	hash_md5(t_mem *mem, t_opt *opt)
 {
 	int			offset;
 	int			i;

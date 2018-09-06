@@ -104,4 +104,9 @@ uint64_t			swap_uint64(uint64_t val);
 void				print_output_base64(t_mem *mem);
 t_mem				*padding_base64(t_mem *mem);
 void				hash_base64(t_mem *mem, t_opt *opt);
+void				opt_init(t_opt *opt);
+void				set_flags(t_opt *opt, char c);
+void				open_fd(t_opt *opt);
+void				print_base64_encode(t_opt *opt, int value, int which);
+void				print_base64_decode(t_opt *opt, t_mem *mem, int i, int which);
 #endif
