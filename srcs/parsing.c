@@ -100,6 +100,6 @@ t_opt		*check_opt(t_opt *opt, char **argv)
 		exit(-1);
 	}
 	while (argv[++i])
-		opt = check_options(opt, argv[i]);
+		check_options(opt, argv[i]);
 	return (opt);
 }

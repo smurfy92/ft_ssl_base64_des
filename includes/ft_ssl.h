@@ -97,6 +97,7 @@ t_opt				*check_opt(t_opt *opt, char **argv);
 t_mem				*padding_md5(t_mem *mem);
 void				md5_process(t_i *m, uint32_t *w, int i);
 void				hash_md5(t_mem *mem, t_opt *opt);
+void				hash_des(t_mem *mem, t_opt *opt);
 t_mem				*padding_sha256(t_mem *mem);
 void				hash_sha256(t_mem *mem, t_opt *opt);
 void				init_mem(t_mem *mem);

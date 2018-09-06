@@ -132,5 +132,4 @@ void	print_base64_decode(t_opt *opt, t_mem *mem, int i, int which)
 		tmp[2] = (get_value(mem->data[i + 2]) << 6);
 	}
 	ft_putstr_fd(tmp, opt->fd);
-	free(&tmp);
 }
