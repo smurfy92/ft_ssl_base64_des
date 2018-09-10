@@ -32,12 +32,19 @@ int32_t g_des_final[64] = {
 	34,  2, 42, 10, 50, 18, 58, 26, 33,  1, 41,  9, 49, 17, 57, 25
 };
 
-void	print_bits(char toto[8])
+int32_t	g_des_expansion[56] = {
+	32, 1, 2, 3, 4, 5, 4, 5, 6, 7, 8, 9,
+	8, 9, 10, 11, 12, 13, 12, 13, 14, 15, 16, 17,
+	16, 17, 18, 19, 20, 21, 20, 21, 22, 23, 24, 25,
+	24, 25, 26, 27, 28, 29, 28, 29, 30, 31, 32, 1
+};
+
+void	print_bits(char *toto, int length)
 {
 	int i = -1;
 	int y;
 
-	while (++i < 8)
+	while (++i < length)
 	{
 		y = -1;
 		while (++y < 8)
@@ -65,21 +72,16 @@ void	final_permute(char toto[8])
 	}
 }
 
-char	*permute(char *to_permute, int32_t tab[64])
+char	*permute(char *to_permute, int32_t *tab, int length)
 {
 	int i = -1;
 	char *tmp;
 
 	tmp = ft_strnew(8);
 	bzero(tmp, 8);
-	while (++i < 64)
-	{
-		// if (g_des_initial[i] &  (1 << (7 - (g_des_initial[i] % 8))))
-		// 	tmp[toto[i] / 8] |= 1 << (7 - toto[i] % 8);
-		if (to_permute[(tab[i] - 1) / 8] &  (1 << (7 - ((tab[i] - 1) % 8))))
-			tmp[i / 8] |= 1 << (7 - i % 8);
-	}
-	print_bits(tmp);
+	while (++i < length)
+		(to_permute[(tab[i] - 1) / 8] &  (1 << (7 - ((tab[i] - 1) % 8)))) ?
+		(tmp[i / 8] |= 1 << (7 - i % 8)) : 0;
 	return (tmp);
 }
 
@@ -101,13 +103,71 @@ t_mem	*padding_des(t_mem *mem)
 	return (message);
 }
 
+
+// void	substitute(char  *text, int tour)
+// {
+
+// }
+
+// void	substitution(char *48text)
+// {
+// 	int i;
+
+// 	i = -1;
+// 	while (++i < 8)
+// 	{
+// 		substitute(48text, i);
+// 	}
+// }
+
+void	round_des(char *right)
+{
+	char *tmp;
+	char	key[6] = "aaaaaa";
+
+	tmp = malloc(sizeof(char) * 13);
+	ft_bzero(tmp, 13);
+	tmp = permute(right, g_des_expansion, 56);
+	int y = -1;
+	int e;
+	while (++y < 6)
+	{
+		e = -1;
+		while (++e < 8)
+			tmp[y] ^= key[y] & (1 << (7 - e));
+	}
+	// substitution(tmp);
+	print_bits(tmp, 12);
+}
+
 void	hash_des(t_mem *mem, t_opt *opt)
 {
 	char cipher[8] = "abcdefgh";
+	char *left;
+	char *right;
 	char *ret;
-	print_bits(cipher);
-	ret = permute(cipher, g_des_initial);
-	permute(ret, g_des_final);
+	char *tmp;
+	print_bits(cipher, 8);
+	ret = permute(cipher, g_des_initial, 64);
+	print_bits(ret, 8);
+	left = (char*)malloc(sizeof(char) * 5);
+	right = (char*)malloc(sizeof(char) * 5);
+	tmp = (char*)malloc(sizeof(char) * 5);
+	ft_bzero(left, 5);
+	ft_bzero(right, 5);
+	ft_memcpy(left, ret, 4);
+	ft_memcpy(right, (ret + 4), 4);
+	int i = -1;
+	while (++i < 1)
+	{
+		bzero(tmp, 5);
+		round_des(right);
+		ft_memcpy(tmp, left, 4);
+		ft_memcpy(left, right, 4);
+		ft_memcpy(right, tmp, 4);
+	}
+	ret = permute(ret, g_des_final, 64);
+	print_bits(ret, 8);
 	opt = NULL;
 	mem = padding_des(mem);
 }
