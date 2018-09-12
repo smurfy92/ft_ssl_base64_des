@@ -13,10 +13,18 @@
 #include "../includes/ft_ssl.h"
 
 int32_t g_des_pc1[56] = {
-   57, 49, 41, 33, 25, 17,  9,  1, 58, 50, 42, 34, 26, 18,
-   10,  2, 59, 51, 43, 35, 27, 19, 11,  3, 60, 52, 44, 36,
-   63, 55, 47, 39, 31, 23, 15,  7, 62, 54, 46, 38, 30, 22,
-   14,  6, 61, 53, 45, 37, 29, 21, 13,  5, 28, 20, 12,  4};
+	57, 49, 41, 33, 25, 17,  9,  1, 58, 50, 42, 34, 26, 18,
+	10,  2, 59, 51, 43, 35, 27, 19, 11,  3, 60, 52, 44, 36,
+	63, 55, 47, 39, 31, 23, 15,  7, 62, 54, 46, 38, 30, 22,
+	14,  6, 61, 53, 45, 37, 29, 21, 13,  5, 28, 20, 12,  4
+};
+
+int32_t g_des_pc2[56] = {
+	14, 17, 11, 24,  1,  5,  3, 28, 15,  6, 21, 10,
+	23, 19, 12,  4, 26,  8, 16,  7, 27, 20, 13,  2,
+	41, 52, 31, 37, 47, 55, 30, 40, 51, 45, 33, 48,
+	44, 49, 39, 56, 34, 53, 46, 42, 50, 36, 29, 32
+};
 
 int32_t g_des_initial[64] = {
 	58, 50, 42, 34, 26, 18, 10,  2, 60, 52, 44, 36, 28, 20, 12,  4,
@@ -99,37 +107,44 @@ int32_t DesSbox[8][4][16] = {
 
 int32_t g_des_shift[16] = {1,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1};
 
-char *g_subkeys[16];
+long g_subkeys[17][3];
+long g_left[17];
 
-void	print_bits(char *toto, int length)
+
+void	print_bits(long toto, int length)
 {
 	int i = -1;
-	int y;
 
 	while (++i < length)
 	{
-		y = -1;
-		while (++y < 8)
-		{
-			if (toto[i] & (1 << (7-y)))
+		// ft_putnbr(i);
+		// ft_putstr(" -> ");
+			if ((toto >> (length - 1 - i) & 0x1) & 0x1)
 				ft_putchar('1');
 			else
 				ft_putchar('0');
-		}
+		// ft_putchar('\n');
 	}
 	ft_putchar('\n');
 }
 
-char	*permute(char *to_permute, int32_t *tab, int length)
+long	permute(long to_permute, int32_t *tab, int length)
 {
 	int i = -1;
-	char *tmp;
+	long tmp;
+	long save;
 
-	tmp = ft_strnew(8);
-	bzero(tmp, 8);
+	tmp = 0;
+
 	while (++i < length)
-		(to_permute[(tab[i] - 1) / 8] &  (1 << (7 - ((tab[i] - 1) % 8)))) ?
-		(tmp[i / 8] |= 1 << (7 - i % 8)) : 0;
+	{
+		save = 0;
+		save |= ((to_permute >> (64 - tab[i])) & 0x1);
+		tmp |= save << (63 - i);
+	}
+	tmp >>= 64 - length;
+	if (length == 56)
+		tmp &= 0xFFFFFFFFFFFFFF;
 	return (tmp);
 }
 
@@ -152,22 +167,6 @@ t_mem	*padding_des(t_mem *mem)
 }
 
 
-// void	substitute(char  *text, int tour)
-// {
-
-// }
-
-// void	substitution(char *48text)
-// {
-// 	int i;
-
-// 	i = -1;
-// 	while (++i < 8)
-// 	{
-// 		substitute(48text, i);
-// 	}
-// }
-
 void	expansion(int *to_expand, char *right, int32_t *tab)
 {
 	int i;
@@ -183,42 +182,12 @@ void	expansion(int *to_expand, char *right, int32_t *tab)
 	while (++i < 48)
 		(right[(tab[i] - 1) / 8] &  (1 << (7 - ((tab[i] - 1) % 8)))) ?
 		(to_expand[i] |= 1 << (7 - i % 8)) : 0;
-	i = -1;
-	while (++i < 48)
-	{
-		// printf("%d\n", tmp[y]);
-		print_bits((char*)&to_expand[i], 1);
-	}
-}
-
-void	round_des(char *right)
-{
-	int tmp[48] = {0};
-	// char	key[6] = "aaaaaa";
-	int i =-1;
-
-
-	print_bits(right, 4);
-	expansion(tmp, right , g_des_expansion);
-	while (++i < 8)
-	{
-
-	}
-
-	// int y = -1;
-	// while (++y < 48)
-	// {
-	// 	// printf("%d\n", tmp[y]);
-	// 	print_bits((char*)&tmp[y], 1);
-	// }
-	// substitution(tmp);
 }
 
 void	get_shifted(int y)
 {
 	char save;
 	int i;
-	// printf("y -> %d toto ->%s\n", y, toto[y]);
 
 	i = -1;
 	save = 0;
@@ -235,44 +204,76 @@ void	get_shifted(int y)
 
 void	generate_subkeys()
 {
-	char key[8] = {0x13, 0x34, 0x57, 0x79, 0x9B, 0xBC, 0xDF, 0xF1};
-	char *ret;
+	// char key[8] = {0x13, 0x34, 0x57, 0x79, 0x9B, 0xBC, 0xDF, 0xF1};
+	long ret;
+	long key = 1383827165325090801;
 	int i;
-	int y;
+	long message = 81985529216486895;
+	long left;
+	long right;
 
-	ret = (char*)malloc(sizeof(char) * 8);
+	long save_right = 0;
+
+	// int y;
+
 	i = 0;
-	g_subkeys[i] = (char*)malloc(sizeof(char) * 8);
-	g_subkeys[i] = permute(key, g_des_pc1, 56);
-	printf("permuted -> \n");
-	print_bits(g_subkeys[i], 7);
-	printf("shifting -> \n");
-	while (i < 16)
+	right = 0;
+	left = 0;
+	printf("message -> \n");
+	print_bits(message, 64);
+	// ft_putchar('\n');
+	ret = permute(key, g_des_pc1, 56);
+	// printf("permuted -> \n");
+	// print_bits(ret, 64);
+	g_subkeys[0][0] = ret >> 28;
+	g_subkeys[0][1] = ret & 0xFFFFFFF;
+	ret = permute(message, g_des_initial, 64);
+	g_left[0] = (ret >> 32) & 0xFFFFFFFF;
+	right = ret & 0xFFFFFFFF;
+	// print_bits(g_subkeys[0][0], 28);
+	// print_bits(g_subkeys[0][1], 28);
+	while (++i <= 16)
 	{
-		y = -1;
-		g_subkeys[i + 1] = (char*)malloc(sizeof(char) * 8);
-		ft_bzero(g_subkeys[i + 1], 8);
-		ft_memcpy(g_subkeys[i + 1], g_subkeys[i], 7);
-		get_shifted(i);
-		printf("i-> %d\n",i + 1);
-		print_bits(g_subkeys[i + 1], 4);
-		print_bits(g_subkeys[i + 1] + 4, 4);
-		// print_bits(g_subkeys[i + 1], 8);
-		i++;
+
+		g_subkeys[i][0] = ((g_subkeys[i - 1][0] << g_des_shift[i - 1]) | (g_subkeys[i - 1][0] >> (28 - g_des_shift[i - 1]))) & 0xFFFFFFF;
+		g_subkeys[i][1] = ((g_subkeys[i - 1][1] << g_des_shift[i - 1]) | (g_subkeys[i - 1][1] >> (28 - g_des_shift[i - 1]))) & 0xFFFFFFF;
+		g_subkeys[i][2] = permute(((g_subkeys[i][0] << 28) | g_subkeys[i][1]) << 8, g_des_pc2, 56);
+
+
+		// MESSAGE
+		// save_right = right;
+
+
+		// ALL FUNCTIONS ON RIGHT
+		// right = left ^ Expand(right)
+
+		// right = left ^ right
+		// left = save_right
+
+		// print_bits((g_subkeys[i][0] << 28) | g_subkeys[i][1], 64);
+		// printf("C%d => \n", i);
+		// print_bits(g_subkeys[i][0], 28);
+		// printf("D%d => \n", i);
+		// print_bits(g_subkeys[i][1], 28);
+		// printf("K%d => \n", i);
+		// print_bits(g_subkeys[i][2], 56);
 	}
-	printf("toto\n");
+	
+	print_bits(left, 32);
+	print_bits(right, 32);
+
 }
 
 void	hash_des(t_mem *mem, t_opt *opt)
 {
-	char cipher[8] = "abcdefgh";
+	// char cipher[8] = "abcdefgh";
 	// char *left;
 	// char *right;
-	char *ret;
-	// char *tmp;
-	// print_bits(cipher, 8);
-	ret = permute(cipher, g_des_initial, 64);
-	print_bits(ret, 8);
+	// long ret;
+	// // char *tmp;
+	// // print_bits(cipher, 8);
+	// ret = permute(cipher, g_des_initial, 64);
+	// print_bits(ret, 64);
 	generate_subkeys();
 	// left = (char*)malloc(sizeof(char) * 5);
 	// right = (char*)malloc(sizeof(char) * 5);
