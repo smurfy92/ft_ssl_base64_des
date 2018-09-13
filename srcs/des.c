@@ -47,7 +47,7 @@ int32_t	g_des_expansion[56] = {
 	24, 25, 26, 27, 28, 29, 28, 29, 30, 31, 32, 1
 };
 
-int32_t DesSbox[8][4][16] = {
+int32_t g_des_sub[8][4][16] = {
    {
    {14,  4, 13,  1,  2, 15, 11,  8,  3, 10,  6, 12,  5,  9,  0,  7},
    { 0, 15,  7,  4, 14,  2, 13,  1, 10,  6, 12, 11,  9,  5,  3,  8},
@@ -105,10 +105,14 @@ int32_t DesSbox[8][4][16] = {
    },
 };
 
+int32_t g_des_permut[32] = {
+	16,  7, 20, 21, 29, 12, 28, 17,  1, 15, 23, 26,  5, 18, 31, 10,
+    2,  8, 24, 14, 32, 27,  3,  9, 19, 13, 30,  6, 22, 11,  4, 25
+};
+
 int32_t g_des_shift[16] = {1,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1};
 
 long g_subkeys[17][3];
-long g_left[17];
 
 
 void	print_bits(long toto, int length)
@@ -145,6 +149,8 @@ long	permute(long to_permute, int32_t *tab, int length)
 	tmp >>= 64 - length;
 	if (length == 56)
 		tmp &= 0xFFFFFFFFFFFFFF;
+	if (length == 32)
+		tmp &= 0xFFFFFFFF;
 	return (tmp);
 }
 
@@ -167,128 +173,98 @@ t_mem	*padding_des(t_mem *mem)
 }
 
 
-void	expansion(int *to_expand, char *right, int32_t *tab)
+int32_t        ft_s_funct(char data, int32_t tab[4][16])
 {
-	int i;
+    int    row;
+    int    col;
 
-	i = -1;
-	while (++i < 32)
-	{
-		if (right[i / 8] & (1 << (7 - i)))
-		to_expand[i] |= right[i / 8] & (1 << (7 - (i % 8)));
-	}
-
-	i = -1;
-	while (++i < 48)
-		(right[(tab[i] - 1) / 8] &  (1 << (7 - ((tab[i] - 1) % 8)))) ?
-		(to_expand[i] |= 1 << (7 - i % 8)) : 0;
+    row = 0;
+    col = 0;
+    row = (((data >> 4) & 0x2) | (data & 0x1));
+    col = (data & 0x1E) >> 1;
+    return (tab[row][col]);
 }
 
-void	get_shifted(int y)
+long        ft_function_s(long xor)
 {
-	char save;
-	int i;
-
-	i = -1;
-	save = 0;
-	while (++i < 7)
-	{
-		if (i == 0)
-			save = (g_subkeys[y + 1][i] >> (7 - g_des_shift[y])) & 0x3;
-		if (i == 6)
-			g_subkeys[y + 1][i] = (g_subkeys[y + 1][i] << g_des_shift[y]) | save;
-		else
-			g_subkeys[y + 1][i] = (g_subkeys[y + 1][i] << g_des_shift[y]) | ((g_subkeys[y + 1][i + 1] >> (7 - g_des_shift[y])) & 0x3);
-	}
+    return (ft_s_funct((xor >> 42) & 0x3F, g_des_sub[0]) << 28 |
+                ft_s_funct((xor >> 36) & 0x3F, g_des_sub[1]) << 24 |
+                ft_s_funct((xor >> 30) & 0x3F, g_des_sub[2]) << 20 |
+                ft_s_funct((xor >> 24) & 0x3F, g_des_sub[3]) << 16 |
+                ft_s_funct((xor >> 18) & 0x3F, g_des_sub[4]) << 12 |
+                ft_s_funct((xor >> 12) & 0x3F, g_des_sub[5]) << 8 |
+                ft_s_funct((xor >> 6) & 0x3F, g_des_sub[6]) << 4 |
+                ft_s_funct((xor >> 0) & 0x3F, g_des_sub[7]) << 0);
 }
 
-void	generate_subkeys()
+long        ft_msg_to_long(char *data, int len)
+{
+    long    save;
+    long    tmp;
+    int        i;
+
+    i = -1;
+    tmp = 0;
+    while (++i < 8)
+    {
+        save = 0;
+        if (i < len)
+            save = data[i] & 0xFF;
+        else
+            save = 0x00;
+        tmp |= (save & 0xFF) << (64 - (8 * (i + 1)));
+    }
+    return (tmp);
+}
+
+void	generate_subkeys(long message)
 {
 	// char key[8] = {0x13, 0x34, 0x57, 0x79, 0x9B, 0xBC, 0xDF, 0xF1};
 	long ret;
 	long key = 1383827165325090801;
 	int i;
-	long message = 81985529216486895;
 	long left;
 	long right;
-
-	long save_right = 0;
-
-	// int y;
+	long save_right;
 
 	i = 0;
 	right = 0;
 	left = 0;
-	printf("message -> \n");
-	print_bits(message, 64);
-	// ft_putchar('\n');
+	save_right = 0;
 	ret = permute(key, g_des_pc1, 56);
-	// printf("permuted -> \n");
-	// print_bits(ret, 64);
 	g_subkeys[0][0] = ret >> 28;
 	g_subkeys[0][1] = ret & 0xFFFFFFF;
 	ret = permute(message, g_des_initial, 64);
-	g_left[0] = (ret >> 32) & 0xFFFFFFFF;
+	left = (ret >> 32) & 0xFFFFFFFF;
 	right = ret & 0xFFFFFFFF;
-	// print_bits(g_subkeys[0][0], 28);
-	// print_bits(g_subkeys[0][1], 28);
 	while (++i <= 16)
 	{
 
 		g_subkeys[i][0] = ((g_subkeys[i - 1][0] << g_des_shift[i - 1]) | (g_subkeys[i - 1][0] >> (28 - g_des_shift[i - 1]))) & 0xFFFFFFF;
 		g_subkeys[i][1] = ((g_subkeys[i - 1][1] << g_des_shift[i - 1]) | (g_subkeys[i - 1][1] >> (28 - g_des_shift[i - 1]))) & 0xFFFFFFF;
-		g_subkeys[i][2] = permute(((g_subkeys[i][0] << 28) | g_subkeys[i][1]) << 8, g_des_pc2, 56);
-
-
-		// MESSAGE
-		// save_right = right;
-
-
-		// ALL FUNCTIONS ON RIGHT
-		// right = left ^ Expand(right)
-
-		// right = left ^ right
-		// left = save_right
-
-		// print_bits((g_subkeys[i][0] << 28) | g_subkeys[i][1], 64);
-		// printf("C%d => \n", i);
-		// print_bits(g_subkeys[i][0], 28);
-		// printf("D%d => \n", i);
-		// print_bits(g_subkeys[i][1], 28);
-		// printf("K%d => \n", i);
-		// print_bits(g_subkeys[i][2], 56);
+		g_subkeys[i][2] = permute(((g_subkeys[i][0] << 28) | g_subkeys[i][1]) << 8, g_des_pc2, 56) >> 8;
+		save_right = right;
+		ret = permute(right << 32, g_des_expansion, 48);
+		ret = g_subkeys[i][2] ^ ret;
+		ret = ft_function_s(ret);
+		ret = permute(ret << 32, g_des_permut, 32);
+		right = left ^ ret;
+		left = save_right;
 	}
-	
-	print_bits(left, 32);
-	print_bits(right, 32);
+	ret = ((right << 32) & 0xFFFFFFFF00000000) | (left & 0xFFFFFFFF);
+	ret = permute(ret , g_des_final, 64);
+	printf("ret finale -> %lX\n", ret);
 
 }
 
 void	hash_des(t_mem *mem, t_opt *opt)
 {
-	// char cipher[8] = "abcdefgh";
-	// char *left;
-	// char *right;
-	// long ret;
-	// // char *tmp;
-	// // print_bits(cipher, 8);
-	// ret = permute(cipher, g_des_initial, 64);
-	// print_bits(ret, 64);
-	generate_subkeys();
-	// left = (char*)malloc(sizeof(char) * 5);
-	// right = (char*)malloc(sizeof(char) * 5);
-	// tmp = (char*)malloc(sizeof(char) * 5);
-	// ft_bzero(left, 5);
-	// ft_bzero(right, 5);
-	// ft_memcpy(left, ret, 4);
-	// ft_memcpy(right, (ret + 4), 4);
-	// bzero(tmp, 5);
-	// round_des(right);
-	// ft_memcpy(tmp, left, 4);
-	// ft_memcpy(left, right, 4);
-	// ft_memcpy(right, tmp, 4);
-	// ret = permute(ret, g_des_final, 64);
-	// print_bits(ret, 8);
+
+	while (mem->len > 0)
+	{
+		generate_subkeys(ft_msg_to_long((char*)mem->data, mem->len));
+		mem->data += 8; 
+		mem->len -= 8;
+	}
 	opt = NULL;
-	mem = padding_des(mem);
 }
