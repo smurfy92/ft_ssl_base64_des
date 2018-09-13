@@ -28,6 +28,7 @@ typedef struct		s_list
 }					t_list;
 
 int					ft_len_nospace(const char *str);
+long				ft_atoi_base(char *str, int base);
 int					ft_isspace(int c);
 int					ft_atoi(char *str);
 void				ft_bzero(void *s, size_t n);

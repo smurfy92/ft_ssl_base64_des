@@ -121,13 +121,10 @@ void	print_bits(long toto, int length)
 
 	while (++i < length)
 	{
-		// ft_putnbr(i);
-		// ft_putstr(" -> ");
 			if ((toto >> (length - 1 - i) & 0x1) & 0x1)
 				ft_putchar('1');
 			else
 				ft_putchar('0');
-		// ft_putchar('\n');
 	}
 	ft_putchar('\n');
 }
@@ -202,31 +199,42 @@ long        ft_msg_to_long(char *data, int len)
     long    save;
     long    tmp;
     int        i;
+    // int        a;
 
     i = -1;
     tmp = 0;
+    // a = 0;
     while (++i < 8)
     {
         save = 0;
         if (i < len)
             save = data[i] & 0xFF;
         else
-            save = 0x00;
+        {
+        	// if (a == 0)
+        	// 	save = 0x0A;
+        	// else
+            	save = 0x00;
+            // a++;
+        }
+        // if (save == 10 && i < len)
+        // 	save = 0x0D;
         tmp |= (save & 0xFF) << (64 - (8 * (i + 1)));
     }
+    printf("hex -> %lX\n", tmp);
     return (tmp);
 }
 
-void	generate_subkeys(long message)
+long	generate_subkeys(long message, t_opt *opt)
 {
-	// char key[8] = {0x13, 0x34, 0x57, 0x79, 0x9B, 0xBC, 0xDF, 0xF1};
 	long ret;
-	long key = 1383827165325090801;
+	long key;
 	int i;
 	long left;
 	long right;
 	long save_right;
 
+	key = (opt->key != 0) ? (opt->key) : 1383827165325090801;
 	i = 0;
 	right = 0;
 	left = 0;
@@ -253,18 +261,42 @@ void	generate_subkeys(long message)
 	}
 	ret = ((right << 32) & 0xFFFFFFFF00000000) | (left & 0xFFFFFFFF);
 	ret = permute(ret , g_des_final, 64);
-	printf("ret finale -> %lX\n", ret);
-
+	return (ret);
 }
 
 void	hash_des(t_mem *mem, t_opt *opt)
 {
+	long ret;
+	t_mem	*tmp;
+	t_mem	*message;
 
+	ret = 0;
+	message = NULL;
+	mem = padding_des(mem);
 	while (mem->len > 0)
 	{
-		generate_subkeys(ft_msg_to_long((char*)mem->data, mem->len));
+		ret = generate_subkeys(ft_msg_to_long((char*)mem->data, mem->len), opt);
+		if (opt->a)
+		{
+			tmp = (t_mem *)malloc(sizeof(t_mem));
+			tmp->data = (unsigned char*)ft_strnew(8);
+			tmp->data[0] = (ret >> 56) & 0xFF;
+			tmp->data[1] = (ret >> 48) & 0xFF; 
+			tmp->data[2] = (ret >> 40) & 0xFF; 
+			tmp->data[3] = (ret >> 32) & 0xFF; 
+			tmp->data[4] = (ret >> 24) & 0xFF; 
+			tmp->data[5] = (ret >> 16) & 0xFF;
+			tmp->data[6] = (ret >> 8) & 0xFF; 
+			tmp->data[7] = ret & 0xFF;
+			printf("mem->len%d\n", mem->len );
+			tmp->len = 8;
+			message = ft_memjoin(message, tmp);	
+		}
+		else
+			printf("ret finale -> %lX\n", ret);
 		mem->data += 8; 
 		mem->len -= 8;
 	}
-	opt = NULL;
+	if (opt->a)
+		hash_base64(message, opt);
 }

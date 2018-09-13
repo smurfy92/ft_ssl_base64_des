@@ -32,6 +32,12 @@ t_opt		*add_arg(t_opt *opt, char *str)
 {
 	t_arg *arg;
 
+	if (opt->k)
+	{
+		opt->key = ft_atoi_base(str, 16);
+		opt->k = 0;
+		return (opt);
+	}
 	if (opt->hash == 2)
 	{
 		if (!opt->i || opt->arg)

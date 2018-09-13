@@ -13,6 +13,7 @@
 FLAGS= -Wall -Wextra -Werror
 
 SRC= ft_memset.c\
+	 ft_atoi_base.c\
 	 ft_bzero.c\
 	 ft_memcpy.c\
 	 ft_memccpy.c\

@@ -53,6 +53,7 @@ typedef struct		s_opt
 {
 	int				hash;
 	struct s_arg	*arg;
+	long			key;
 	char			*output;
 	int				stdin;
 	int				p;
@@ -61,7 +62,9 @@ typedef struct		s_opt
 	int				o;
 	int				q;
 	int				r;
+	int				a;
 	int				s;
+	int				k;
 	int				fd;
 }					t_opt;
 
@@ -110,4 +113,5 @@ void				set_flags(t_opt *opt, char c);
 void				open_fd(t_opt *opt);
 void				print_base64_encode(t_opt *opt, int value, int which);
 void				print_base64_decode(t_opt *opt, t_mem *mem, int i, int which);
+void				base64_encode(t_mem *mem, t_opt *opt);
 #endif
