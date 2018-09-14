@@ -12,6 +12,22 @@
 
 #include "../includes/ft_ssl.h"
 
+char		*padding_key(char *str)
+{
+	char *tmp;
+
+	if (ft_strlen(str) > 16)
+		str[16] = 0;
+	else if (ft_strlen(str) < 16)
+	{
+		tmp = ft_strnew(16);
+		ft_memcpy(tmp, "0000000000000000", 16);
+		ft_memcpy(tmp, str, ft_strlen(str));
+		return (tmp);
+	}
+	return (str);
+}
+
 void		push_arg_list(t_opt *opt, t_arg *arg)
 {
 	t_arg *tmp;
@@ -34,6 +50,7 @@ t_opt		*add_arg(t_opt *opt, char *str)
 
 	if (opt->k)
 	{
+		str = padding_key(str);
 		opt->key = ft_atoi_base(str, 16);
 		opt->k = 0;
 		return (opt);

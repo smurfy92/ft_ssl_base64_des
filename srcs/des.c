@@ -213,9 +213,7 @@ long        ft_msg_to_long(char *data, int len)
         if (i < len)
             save = data[i] & 0xFF;
         else
-        {
             	save = 8 - (len %8);
-        }
         tmp |= (save & 0xFF) << (64 - (8 * (i + 1)));
     }
     
@@ -260,47 +258,49 @@ long	generate_subkeys(long message, t_opt *opt)
 	ret = permute(ret , g_des_final, 64);
 	return (ret);
 }
-
-void	hash_des(t_mem *mem, t_opt *opt)
+t_mem	*des_decode(t_mem *mem, t_opt *opt)
 {
-	long ret;
-	t_mem	*tmp;
+	opt = NULL;
+	return (mem);
+}
+
+t_mem	*des_encode(t_mem *mem, t_opt *opt)
+{
 	t_mem	*message;
+	t_mem	*tmp;
+	long ret;
 
 	ret = 0;
 	message = NULL;
-	// mem = padding_des(mem);
-	// printf("mem->len%d \n", mem->len);
 	while (mem->len > 0)
 	{
-		// printf("mem->len%d\n", mem->len);
 		ret = generate_subkeys(ft_msg_to_long((char*)mem->data, mem->len), opt);
-		// if (opt->a)
-		// {
-			tmp = (t_mem *)malloc(sizeof(t_mem));
-			tmp->data = (unsigned char*)ft_strnew(8);
-			tmp->data[0] = (ret >> 56) & 0xFF;
-			tmp->data[1] = (ret >> 48) & 0xFF; 
-			tmp->data[2] = (ret >> 40) & 0xFF; 
-			tmp->data[3] = (ret >> 32) & 0xFF; 
-			tmp->data[4] = (ret >> 24) & 0xFF; 
-			tmp->data[5] = (ret >> 16) & 0xFF;
-			tmp->data[6] = (ret >> 8) & 0xFF; 
-			tmp->data[7] = ret & 0xFF;
-			// printf("mem->len%d\n", mem->len );
-			tmp->len = 8;
-			message = ft_memjoin(message, tmp);	
-		// }
-		// else
-		// {
-
-		// 	// printf("ret finale -> %lX\n", ret);
-		// }
+		tmp = (t_mem *)malloc(sizeof(t_mem));
+		tmp->data = (unsigned char*)ft_strnew(8);
+		tmp->data[0] = (ret >> 56) & 0xFF;
+		tmp->data[1] = (ret >> 48) & 0xFF; 
+		tmp->data[2] = (ret >> 40) & 0xFF; 
+		tmp->data[3] = (ret >> 32) & 0xFF; 
+		tmp->data[4] = (ret >> 24) & 0xFF; 
+		tmp->data[5] = (ret >> 16) & 0xFF;
+		tmp->data[6] = (ret >> 8) & 0xFF; 
+		tmp->data[7] = ret & 0xFF;
+		tmp->len = 8;
+		message = ft_memjoin(message, tmp);	
 		mem->data += 8; 
 		mem->len -= 8;
 	}
-	if (opt->a)
-		hash_base64(message, opt);
+	return (message);
+}
+
+void	hash_des(t_mem *mem, t_opt *opt)
+{
+	if (!opt->d)
+		mem = des_encode(mem, opt);
 	else
-		write_fd(1, message);
+		mem = des_decode(mem, opt);
+	if (opt->a)
+		hash_base64(mem, opt);
+	else
+		write_fd(1, mem);
 }
