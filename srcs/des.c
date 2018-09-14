@@ -154,9 +154,11 @@ long	permute(long to_permute, int32_t *tab, int length)
 t_mem	*padding_des(t_mem *mem)
 {
 	int		len;
+	int		tmp;
 	t_mem	*message;
 
 	len = mem->len;
+	tmp = len;
 	while (len % 8 != 0)
 		len++;
 	message = (t_mem *)malloc(sizeof(t_mem));
@@ -164,7 +166,7 @@ t_mem	*padding_des(t_mem *mem)
 	ft_memcpy(message->data, mem->data, mem->len);
 	message->len = len;
 	while (++mem->len <= len)
-		message->data[mem->len] = 0;
+		message->data[mem->len] = 8 - (tmp % 8);
 	ft_free_mem(mem);
 	return (message);
 }
@@ -202,26 +204,21 @@ long        ft_msg_to_long(char *data, int len)
     // int        a;
 
     i = -1;
-    tmp = 0;
+    tmp = 0;	
     // a = 0;
     while (++i < 8)
     {
+    	// printf("hex -> %hhX\n", data[i]);
         save = 0;
         if (i < len)
             save = data[i] & 0xFF;
         else
         {
-        	// if (a == 0)
-        	// 	save = 0x0A;
-        	// else
-            	save = 0x00;
-            // a++;
+            	save = 8 - (len %8);
         }
-        // if (save == 10 && i < len)
-        // 	save = 0x0D;
         tmp |= (save & 0xFF) << (64 - (8 * (i + 1)));
     }
-    printf("hex -> %lX\n", tmp);
+    
     return (tmp);
 }
 
@@ -272,12 +269,14 @@ void	hash_des(t_mem *mem, t_opt *opt)
 
 	ret = 0;
 	message = NULL;
-	mem = padding_des(mem);
+	// mem = padding_des(mem);
+	// printf("mem->len%d \n", mem->len);
 	while (mem->len > 0)
 	{
+		// printf("mem->len%d\n", mem->len);
 		ret = generate_subkeys(ft_msg_to_long((char*)mem->data, mem->len), opt);
-		if (opt->a)
-		{
+		// if (opt->a)
+		// {
 			tmp = (t_mem *)malloc(sizeof(t_mem));
 			tmp->data = (unsigned char*)ft_strnew(8);
 			tmp->data[0] = (ret >> 56) & 0xFF;
@@ -288,15 +287,20 @@ void	hash_des(t_mem *mem, t_opt *opt)
 			tmp->data[5] = (ret >> 16) & 0xFF;
 			tmp->data[6] = (ret >> 8) & 0xFF; 
 			tmp->data[7] = ret & 0xFF;
-			printf("mem->len%d\n", mem->len );
+			// printf("mem->len%d\n", mem->len );
 			tmp->len = 8;
 			message = ft_memjoin(message, tmp);	
-		}
-		else
-			printf("ret finale -> %lX\n", ret);
+		// }
+		// else
+		// {
+
+		// 	// printf("ret finale -> %lX\n", ret);
+		// }
 		mem->data += 8; 
 		mem->len -= 8;
 	}
 	if (opt->a)
 		hash_base64(message, opt);
+	else
+		write_fd(1, message);
 }
