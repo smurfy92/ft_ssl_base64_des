@@ -54,49 +54,49 @@ int32_t g_des_sub[8][4][16] = {
    { 4,  1, 14,  8, 13,  6,  2, 11, 15, 12,  9,  7,  3, 10,  5,  0},
    {15, 12,  8,  2,  4,  9,  1,  7,  5, 11,  3, 14, 10,  0,  6, 13},
    },
- 
+
    {
    {15,  1,  8, 14,  6, 11,  3,  4,  9,  7,  2, 13, 12,  0,  5, 10},
    { 3, 13,  4,  7, 15,  2,  8, 14, 12,  0,  1, 10,  6,  9, 11,  5},
    { 0, 14,  7, 11, 10,  4, 13,  1,  5,  8, 12,  6,  9,  3,  2, 15},
    {13,  8, 10,  1,  3, 15,  4,  2, 11,  6,  7, 12,  0,  5, 14,  9},
    },
- 
+
    {
    {10,  0,  9, 14,  6,  3, 15,  5,  1, 13, 12,  7, 11,  4,  2,  8},
    {13,  7,  0,  9,  3,  4,  6, 10,  2,  8,  5, 14, 12, 11, 15,  1},
    {13,  6,  4,  9,  8, 15,  3,  0, 11,  1,  2, 12,  5, 10, 14,  7},
    { 1, 10, 13,  0,  6,  9,  8,  7,  4, 15, 14,  3, 11,  5,  2, 12},
    },
- 
+
    {
    { 7, 13, 14,  3,  0,  6,  9, 10,  1,  2,  8,  5, 11, 12,  4, 15},
    {13,  8, 11,  5,  6, 15,  0,  3,  4,  7,  2, 12,  1, 10, 14,  9},
    {10,  6,  9,  0, 12, 11,  7, 13, 15,  1,  3, 14,  5,  2,  8,  4},
    { 3, 15,  0,  6, 10,  1, 13,  8,  9,  4,  5, 11, 12,  7,  2, 14},
    },
- 
+
    {
    { 2, 12,  4,  1,  7, 10, 11,  6,  8,  5,  3, 15, 13,  0, 14,  9},
    {14, 11,  2, 12,  4,  7, 13,  1,  5,  0, 15, 10,  3,  9,  8,  6},
    { 4,  2,  1, 11, 10, 13,  7,  8, 15,  9, 12,  5,  6,  3,  0, 14},
    {11,  8, 12,  7,  1, 14,  2, 13,  6, 15,  0,  9, 10,  4,  5,  3},
    },
- 
+
    {
    {12,  1, 10, 15,  9,  2,  6,  8,  0, 13,  3,  4, 14,  7,  5, 11},
    {10, 15,  4,  2,  7, 12,  9,  5,  6,  1, 13, 14,  0, 11,  3,  8},
    { 9, 14, 15,  5,  2,  8, 12,  3,  7,  0,  4, 10,  1, 13, 11,  6},
    { 4,  3,  2, 12,  9,  5, 15, 10, 11, 14,  1,  7,  6,  0,  8, 13},
    },
- 
+
    {
    { 4, 11,  2, 14, 15,  0,  8, 13,  3, 12,  9,  7,  5, 10,  6,  1},
    {13,  0, 11,  7,  4,  9,  1, 10, 14,  3,  5, 12,  2, 15,  8,  6},
    { 1,  4, 11, 13, 12,  3,  7, 14, 10, 15,  6,  8,  0,  5,  9,  2},
    { 6, 11, 13,  8,  1,  4, 10,  7,  9,  5,  0, 15, 14,  2,  3, 12},
    },
- 
+
    {
    {13,  2,  8,  4,  6, 15, 11,  1, 10,  9,  3, 14,  5,  0, 12,  7},
    { 1, 15, 13,  8, 10,  3,  7,  4, 12,  5,  6, 11,  0, 14,  9,  2},
@@ -122,11 +122,11 @@ void	print_bits(long toto, int length)
 	while (++i < length)
 	{
 			if ((toto >> (length - 1 - i) & 0x1) & 0x1)
-				ft_putchar('1');
+				ft_putchar_fd('1', 2);
 			else
-				ft_putchar('0');
+				ft_putchar_fd('0', 2);
 	}
-	ft_putchar('\n');
+	ft_putchar_fd('\n', 2);
 }
 
 long	permute(long to_permute, int32_t *tab, int length)
@@ -201,14 +201,11 @@ long        ft_msg_to_long(char *data, int len)
     long    save;
     long    tmp;
     int        i;
-    // int        a;
 
     i = -1;
-    tmp = 0;	
-    // a = 0;
+    tmp = 0;
     while (++i < 8)
     {
-    	// printf("hex -> %hhX\n", data[i]);
         save = 0;
         if (i < len)
             save = data[i] & 0xFF;
@@ -216,76 +213,49 @@ long        ft_msg_to_long(char *data, int len)
             	save = 8 - (len %8);
         tmp |= (save & 0xFF) << (64 - (8 * (i + 1)));
     }
-    
+
     return (tmp);
 }
 
-long	generate_subkeys_decode(long message, t_opt *opt)
+void	create_subkeys(t_opt *opt)
 {
-	long ret;
-	long key;
 	int i;
-	long left;
-	long right;
-	long save_right;
+	long ret;
 
-	key = (opt->key != 0) ? (opt->key) : 1383827165325090801;
-	i = 16;
-	right = 0;
-	left = 0;
-	save_right = 0;
-	ret = permute(key, g_des_pc1, 56);
+	i = 0;
+	ret = permute((opt->key != 0) ? (opt->key) :
+	1383827165325090801, g_des_pc1, 56);
 	g_subkeys[i][0] = ret >> 28;
 	g_subkeys[i][1] = ret & 0xFFFFFFF;
-	ret = permute(message, g_des_initial, 64);
-	left = (ret >> 32) & 0xFFFFFFFF;
-	right = ret & 0xFFFFFFFF;
-	while (--i >= 0)
+	while (++i <= 16)
 	{
-
-		g_subkeys[i][0] = ((g_subkeys[i + 1][0] << g_des_shift[i + 1]) | (g_subkeys[i + 1][0] >> (28 - g_des_shift[i + 1]))) & 0xFFFFFFF;
-		g_subkeys[i][1] = ((g_subkeys[i + 1][1] << g_des_shift[i + 1]) | (g_subkeys[i + 1][1] >> (28 - g_des_shift[i + 1]))) & 0xFFFFFFF;
-		g_subkeys[i][2] = permute(((g_subkeys[i][0] << 28) | g_subkeys[i][1]) << 8, g_des_pc2, 56) >> 8;
-		print_bits(g_subkeys[i][0], 64);
-		save_right = right;
-		ret = permute(right << 32, g_des_expansion, 48);
-		ret = g_subkeys[i][2] ^ ret;
-		ret = ft_function_s(ret);
-		ret = permute(ret << 32, g_des_permut, 32);
-		right = left ^ ret;
-		left = save_right;
+		g_subkeys[i][0] = ((g_subkeys[i - 1][0] << g_des_shift[i - 1]) |
+		(g_subkeys[i - 1][0] >> (28 - g_des_shift[i - 1]))) & 0xFFFFFFF;
+		g_subkeys[i][1] = ((g_subkeys[i - 1][1] << g_des_shift[i - 1]) |
+		(g_subkeys[i - 1][1] >> (28 - g_des_shift[i - 1]))) & 0xFFFFFFF;
+		g_subkeys[i][2] = permute(((g_subkeys[i][0] << 28) |
+		g_subkeys[i][1]) << 8, g_des_pc2, 56) >> 8;
 	}
-	ret = ((right << 32) & 0xFFFFFFFF00000000) | (left & 0xFFFFFFFF);
-	ret = permute(ret , g_des_final, 64);
-	return (ret);
 }
 
 long	generate_subkeys(long message, t_opt *opt)
 {
 	long ret;
-	long key;
 	int i;
 	long left;
 	long right;
 	long save_right;
 
-	key = (opt->key != 0) ? (opt->key) : 1383827165325090801;
-	i = 0;
+	i = (!opt->d) ? (0) : (17);
 	right = 0;
 	left = 0;
 	save_right = 0;
-	ret = permute(key, g_des_pc1, 56);
-	g_subkeys[i][0] = ret >> 28;
-	g_subkeys[i][1] = ret & 0xFFFFFFF;
+	create_subkeys(opt);
 	ret = permute(message, g_des_initial, 64);
 	left = (ret >> 32) & 0xFFFFFFFF;
 	right = ret & 0xFFFFFFFF;
-	while (++i <= 16)
+	while ((!opt->d) ? (++i <= 16) : (--i > 0))
 	{
-		g_subkeys[i][0] = ((g_subkeys[i - 1][0] << g_des_shift[i - 1]) | (g_subkeys[i - 1][0] >> (28 - g_des_shift[i - 1]))) & 0xFFFFFFF;
-		g_subkeys[i][1] = ((g_subkeys[i - 1][1] << g_des_shift[i - 1]) | (g_subkeys[i - 1][1] >> (28 - g_des_shift[i - 1]))) & 0xFFFFFFF;
-		g_subkeys[i][2] = permute(((g_subkeys[i][0] << 28) | g_subkeys[i][1]) << 8, g_des_pc2, 56) >> 8;
-		print_bits(g_subkeys[i][0], 64);
 		save_right = right;
 		ret = permute(right << 32, g_des_expansion, 48);
 		ret = g_subkeys[i][2] ^ ret;
@@ -297,35 +267,6 @@ long	generate_subkeys(long message, t_opt *opt)
 	ret = ((right << 32) & 0xFFFFFFFF00000000) | (left & 0xFFFFFFFF);
 	ret = permute(ret , g_des_final, 64);
 	return (ret);
-}
-
-t_mem	*des_decode(t_mem *mem, t_opt *opt)
-{
-	t_mem	*message;
-	t_mem	*tmp;
-	long ret;
-
-	ret = 0;
-	message = NULL;
-	while (mem->len > 0)
-	{
-		ret = generate_subkeys_decode(ft_msg_to_long((char*)mem->data, mem->len), opt);
-		tmp = (t_mem *)malloc(sizeof(t_mem));
-		tmp->data = (unsigned char*)ft_strnew(8);
-		tmp->data[0] = (ret >> 56) & 0xFF;
-		tmp->data[1] = (ret >> 48) & 0xFF; 
-		tmp->data[2] = (ret >> 40) & 0xFF; 
-		tmp->data[3] = (ret >> 32) & 0xFF; 
-		tmp->data[4] = (ret >> 24) & 0xFF; 
-		tmp->data[5] = (ret >> 16) & 0xFF;
-		tmp->data[6] = (ret >> 8) & 0xFF; 
-		tmp->data[7] = ret & 0xFF;
-		tmp->len = 8;
-		message = ft_memjoin(message, tmp);	
-		mem->data += 8; 
-		mem->len -= 8;
-	}
-	return (message);
 }
 
 t_mem	*des_encode(t_mem *mem, t_opt *opt)
@@ -342,16 +283,16 @@ t_mem	*des_encode(t_mem *mem, t_opt *opt)
 		tmp = (t_mem *)malloc(sizeof(t_mem));
 		tmp->data = (unsigned char*)ft_strnew(8);
 		tmp->data[0] = (ret >> 56) & 0xFF;
-		tmp->data[1] = (ret >> 48) & 0xFF; 
-		tmp->data[2] = (ret >> 40) & 0xFF; 
-		tmp->data[3] = (ret >> 32) & 0xFF; 
-		tmp->data[4] = (ret >> 24) & 0xFF; 
+		tmp->data[1] = (ret >> 48) & 0xFF;
+		tmp->data[2] = (ret >> 40) & 0xFF;
+		tmp->data[3] = (ret >> 32) & 0xFF;
+		tmp->data[4] = (ret >> 24) & 0xFF;
 		tmp->data[5] = (ret >> 16) & 0xFF;
-		tmp->data[6] = (ret >> 8) & 0xFF; 
+		tmp->data[6] = (ret >> 8) & 0xFF;
 		tmp->data[7] = ret & 0xFF;
 		tmp->len = 8;
-		message = ft_memjoin(message, tmp);	
-		mem->data += 8; 
+		message = ft_memjoin(message, tmp);
+		mem->data += 8;
 		mem->len -= 8;
 	}
 	return (message);
@@ -359,10 +300,9 @@ t_mem	*des_encode(t_mem *mem, t_opt *opt)
 
 void	hash_des(t_mem *mem, t_opt *opt)
 {
-	if (!opt->d)
-		mem = des_encode(mem, opt);
-	else
-		mem = des_decode(mem, opt);
+	if (opt->d && opt->a)
+		hash_base64(mem, opt);
+	mem = des_encode(mem, opt);
 	if (opt->a)
 		hash_base64(mem, opt);
 	else
