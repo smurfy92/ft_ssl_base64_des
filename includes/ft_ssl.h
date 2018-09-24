@@ -112,6 +112,6 @@ void				opt_init(t_opt *opt);
 void				set_flags(t_opt *opt, char c);
 void				open_fd(t_opt *opt);
 void				print_base64_encode(t_opt *opt, int value, int which);
-void				print_base64_decode(t_opt *opt, t_mem *mem, int i, int which);
+t_mem				*print_base64_decode(t_mem *mem, int i, int which);
 void				base64_encode(t_mem *mem, t_opt *opt);
 #endif

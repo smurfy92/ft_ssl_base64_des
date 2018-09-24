@@ -107,29 +107,33 @@ int		get_value(char c)
 	return (-1);
 }
 
-void	print_base64_decode(t_opt *opt, t_mem *mem, int i, int which)
+t_mem	*print_base64_decode(t_mem *mem, int i, int which)
 {
-	char *tmp;
+	t_mem *tmp;
 
-	tmp = ft_strnew(3);
-	tmp[0] = (get_value(mem->data[i]) << 2) |
+	tmp = (t_mem *)malloc(sizeof(t_mem));
+	tmp->data = (unsigned char*)ft_strnew(3);
+	tmp->data[0] = (get_value(mem->data[i]) << 2) |
 	(get_value(mem->data[i + 1]) >> 4);
+	tmp->len = 2;
 	if (which == 0)
 	{
-		tmp[1] = (get_value(mem->data[i + 1]) << 4) |
+		tmp->data[1] = (get_value(mem->data[i + 1]) << 4) |
 		(get_value(mem->data[i + 2]) >> 2);
-		tmp[2] = (get_value(mem->data[i + 2]) << 6) |
+		tmp->data[2] = (get_value(mem->data[i + 2]) << 6) |
 		(get_value(mem->data[i + 3]));
+		tmp->len = 3;
 	}
 	if (which == 1)
-		tmp[1] = (get_value(mem->data[i + 1]) & 0xF);
+		tmp->data[1] = (get_value(mem->data[i + 1]) & 0xF);
 	if (which == 2)
 	{
-		tmp[0] = (get_value(mem->data[i]) << 2) |
+		tmp->data[0] = (get_value(mem->data[i]) << 2) |
 		(get_value(mem->data[i + 1]) >> 4);
-		tmp[1] = (get_value(mem->data[i + 1]) << 4) |
+		tmp->data[1] = (get_value(mem->data[i + 1]) << 4) |
 		(get_value(mem->data[i + 2]) >> 2);
-		tmp[2] = (get_value(mem->data[i + 2]) << 6);
+		tmp->data[2] = (get_value(mem->data[i + 2]) << 6);
+		tmp->len = 3;
 	}
-	ft_putstr_fd(tmp, opt->fd);
+	return (tmp);
 }

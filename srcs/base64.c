@@ -67,11 +67,13 @@ void	clean_string(t_mem *mem)
 	}
 }
 
-void	base64_decode(t_mem *mem, t_opt *opt)
+t_mem	*base64_decode(t_mem *mem)
 {
 	int		i;
 	int		len;
+	t_mem 	*tmp;
 
+	tmp = NULL;
 	i = 0;
 	clean_string(mem);
 	len = mem->len - (mem->len % 4);
@@ -79,19 +81,26 @@ void	base64_decode(t_mem *mem, t_opt *opt)
 		len -= 4;
 	while (i < len)
 	{
-		print_base64_decode(opt, mem, i, 0);
+		tmp = ft_memjoin(tmp, print_base64_decode(mem, i, 0));
 		i += 4;
 	}
 	if (mem->len % 4 == 2)
-		print_base64_decode(opt, mem, i, 1);
+		tmp = ft_memjoin(tmp, print_base64_decode(mem, i, 1));
 	else if (mem->len % 4 == 3)
-		print_base64_decode(opt, mem, i, 2);
+		tmp = ft_memjoin(tmp, print_base64_decode(mem, i, 2));
+	return (tmp);
 }
 
 void	hash_base64(t_mem *mem, t_opt *opt)
 {
+	t_mem *ret;
+
+	ret = NULL;
 	if (!opt->d)
 		base64_encode(mem, opt);
 	else
-		base64_decode(mem, opt);
+	{
+		ret = base64_decode(mem);
+		ft_putstr_fd((char*)ret->data, opt->fd);
+	}
 }
