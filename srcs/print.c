@@ -115,13 +115,14 @@ t_mem	*print_base64_decode(t_mem *mem, int i, int which)
 	tmp->data = (unsigned char*)ft_strnew(3);
 	tmp->data[0] = (get_value(mem->data[i]) << 2) |
 	(get_value(mem->data[i + 1]) >> 4);
-	tmp->len = 2;
+	tmp->len = 1;
 	if (which == 0)
 	{
 		tmp->data[1] = (get_value(mem->data[i + 1]) << 4) |
 		(get_value(mem->data[i + 2]) >> 2);
 		tmp->data[2] = (get_value(mem->data[i + 2]) << 6) |
 		(get_value(mem->data[i + 3]));
+		// ft_putstr_fd((char*)tmp, 1);
 		tmp->len = 3;
 	}
 	if (which == 1)
@@ -133,7 +134,7 @@ t_mem	*print_base64_decode(t_mem *mem, int i, int which)
 		tmp->data[1] = (get_value(mem->data[i + 1]) << 4) |
 		(get_value(mem->data[i + 2]) >> 2);
 		tmp->data[2] = (get_value(mem->data[i + 2]) << 6);
-		tmp->len = 3;
+		tmp->len = 2;
 	}
 	return (tmp);
 }

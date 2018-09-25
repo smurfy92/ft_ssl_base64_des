@@ -39,6 +39,7 @@ void	base64_encode(t_mem *mem, t_opt *opt)
 		tmp = (mem->data[i] << 10) | (mem->data[i + 1] << 2);
 		print_base64_encode(opt, tmp, 2);
 	}
+	ft_putchar_fd('\n', opt->fd);
 }
 
 void	clean_string(t_mem *mem)
@@ -101,6 +102,6 @@ void	hash_base64(t_mem *mem, t_opt *opt)
 	else
 	{
 		ret = base64_decode(mem);
-		ft_putstr_fd((char*)ret->data, opt->fd);
+		write_fd(opt->fd, ret);
 	}
 }

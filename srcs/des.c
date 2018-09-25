@@ -277,7 +277,7 @@ t_mem	*des_encode(t_mem *mem, t_opt *opt)
 
 	ret = 0;
 	message = NULL;
-	while (mem->len > 0)
+	while (mem->len >= opt->d)
 	{
 		ret = generate_subkeys(ft_msg_to_long((char*)mem->data, mem->len), opt);
 		tmp = (t_mem *)malloc(sizeof(t_mem));
@@ -300,11 +300,25 @@ t_mem	*des_encode(t_mem *mem, t_opt *opt)
 
 void	hash_des(t_mem *mem, t_opt *opt)
 {
+	int		size;
+
+	size = 0;
 	if (opt->d && opt->a)
-		hash_base64(mem, opt);
+	{
+		// printf("len before -> %d\n",mem->len);
+		mem = base64_decode(mem);
+		// printf("mem->data %s\n", mem->data);
+		// printf("len after -> %d\n",mem->len);
+		// write_fd(3, mem);
+	}
 	mem = des_encode(mem, opt);
-	if (opt->a)
+	if (opt->a && !opt->d)
 		hash_base64(mem, opt);
 	else
-		write_fd(1, mem);
+	{
+		size = mem->data[mem->len - 1];
+		if (mem->data[mem->len - size] == size)
+			mem->len -= size;
+		write_fd(opt->fd, mem);
+	}
 }

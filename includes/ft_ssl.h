@@ -114,4 +114,5 @@ void				open_fd(t_opt *opt);
 void				print_base64_encode(t_opt *opt, int value, int which);
 t_mem				*print_base64_decode(t_mem *mem, int i, int which);
 void				base64_encode(t_mem *mem, t_opt *opt);
+t_mem				*base64_decode(t_mem *mem);
 #endif

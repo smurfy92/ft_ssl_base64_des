@@ -83,8 +83,11 @@ t_opt		*check_options(t_opt *opt, char *str)
 	while (str[++i])
 	{
 		if (opt->o)
+		{
 			opt->output = ft_strdup(str);
-		opt->o = 0;
+			continue;
+		}
+
 		if (str[0] == '-')
 			b = 1;
 		else
