@@ -22,12 +22,14 @@ void		opt_init(t_opt *opt)
 	opt->i = 0;
 	opt->a = 0;
 	opt->o = 0;
+	opt->v = 0;
 	opt->output = NULL;
 	opt->stdin = 1;
 	opt->arg = NULL;
 	opt->fd = 1;
 	opt->k = 0;
 	opt->key = 0;
+	opt->vector = 0;
 }
 
 void		init_mem(t_mem *mem)
@@ -53,6 +55,7 @@ void		set_flags(t_opt *opt, char c)
 	(c == 'o') ? (opt->o = 1) : 0;
 	(c == 's') ? (opt->s = 1) : 0;
 	(c == 'k') ? (opt->k = 1) : 0;
+	(c == 'v') ? (opt->v = 1) : 0;
 }
 
 void		open_fd(t_opt *opt)

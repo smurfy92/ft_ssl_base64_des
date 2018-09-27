@@ -48,11 +48,13 @@ t_opt		*add_arg(t_opt *opt, char *str)
 {
 	t_arg *arg;
 
-	if (opt->k)
+	if (opt->k || opt->v)
 	{
 		str = padding_key(str);
-		opt->key = ft_atoi_base(str, 16);
+		(opt->k) ? (opt->key = ft_atoi_base(str, 16)) :
+		(opt->vector = ft_atoi_base(str, 16));
 		opt->k = 0;
+		opt->v = 0;
 		return (opt);
 	}
 	if (opt->hash == 2)

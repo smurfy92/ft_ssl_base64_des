@@ -26,7 +26,7 @@
 # define B(x) (ROTR(x, 6) ^ ROTR(x, 11) ^ ROTR(x, 25))
 # define C(x) (ROTR(x, 7) ^ ROTR(x, 18) ^ SHR(x, 3))
 # define D(x) (ROTR(x, 17) ^ ROTR(x, 19) ^ SHR(x, 10))
-# define HASH (const char*[5]){"md5", "sha256", "base64", "des", NULL}
+# define HASH (const char*[6]){"md5", "sha256", "base64", "des", "des-cbc", NULL}
 # define DEBUG 1
 # define BUFFER 1024
 # include <stdint.h>
@@ -54,6 +54,7 @@ typedef struct		s_opt
 	int				hash;
 	struct s_arg	*arg;
 	long			key;
+	long			vector;
 	char			*output;
 	int				stdin;
 	int				p;
@@ -65,6 +66,7 @@ typedef struct		s_opt
 	int				a;
 	int				s;
 	int				k;
+	int				v;
 	int				fd;
 }					t_opt;
 

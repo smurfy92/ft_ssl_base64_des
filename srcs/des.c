@@ -273,13 +273,36 @@ t_mem	*des_encode(t_mem *mem, t_opt *opt)
 {
 	t_mem	*message;
 	t_mem	*tmp;
+	long save_message;
 	long ret;
 
 	ret = 0;
 	message = NULL;
+	save_message = 0;
+	if (opt->hash == 4)
+	{
+		if (!opt->vector)
+		{
+			ft_putendl("iv missing");
+			exit(-1);
+		}
+	}
 	while (mem->len >= opt->d)
 	{
-		ret = generate_subkeys(ft_msg_to_long((char*)mem->data, mem->len), opt);
+		save_message = ft_msg_to_long((char*)mem->data, mem->len);
+		if (opt->hash == 4 && !opt->d)
+			save_message ^= opt->vector;
+		ret = generate_subkeys(save_message, opt);
+		if (opt->hash == 4)
+		{
+			if (opt->d)
+			{
+				ret ^= opt->vector;
+				opt->vector = save_message;
+			}
+			else
+				opt->vector = ret;
+		}
 		tmp = (t_mem *)malloc(sizeof(t_mem));
 		tmp->data = (unsigned char*)ft_strnew(8);
 		tmp->data[0] = (ret >> 56) & 0xFF;
@@ -304,13 +327,7 @@ void	hash_des(t_mem *mem, t_opt *opt)
 
 	size = 0;
 	if (opt->d && opt->a)
-	{
 		mem = base64_decode(mem);
-		// printf("mem->data %s\n", mem->data);
-		// printf("len after -> %d\n",mem->len);
-		// write_fd(1, mem);
-		// exit(0);
-	}
 	mem = des_encode(mem, opt);
 	if (opt->a && !opt->d)
 		hash_base64(mem, opt);
