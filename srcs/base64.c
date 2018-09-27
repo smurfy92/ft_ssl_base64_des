@@ -42,30 +42,28 @@ void	base64_encode(t_mem *mem, t_opt *opt)
 	ft_putchar_fd('\n', opt->fd);
 }
 
-void	clean_string(t_mem *mem)
+t_mem	*clean_string(t_mem *mem)
 {
 	int i;
+	int j;
+	t_mem *tmp;
 
+	tmp = (t_mem*)malloc(sizeof(t_mem));
+	tmp->data = (unsigned char*)ft_strnew(mem->len);
+	tmp->len = 0;
 	i = 0;
+	j = 0;
 	while (i < mem->len)
 	{
-		if (mem->data[i] == '=')
+		if (mem->data[i] != '\n' && mem->data[i] != ' ' && mem->data[i] != '\t' && mem->data[i] != '=')
 		{
-			mem->len = i;
-			mem->data[i] = 0;
-			break ;
+			tmp->len++;
+			tmp->data[j++] = mem->data[i];
 		}
-		if (!ft_isalpha(mem->data[i]) && !ft_isdigit(mem->data[i]))
-		{
-			mem->data[i] = 0;
-			if (i != mem->len - 1)
-				mem->data = (unsigned char *)ft_strjoin_nf((char*)mem->data,
-				(char*)&mem->data[i + 1], 1);
-			mem->len--;
-		}
-		else
-			i++;
+		i++;
 	}
+	ft_free_mem(mem);
+	return (tmp);
 }
 
 t_mem	*base64_decode(t_mem *mem)
@@ -76,7 +74,7 @@ t_mem	*base64_decode(t_mem *mem)
 
 	tmp = NULL;
 	i = 0;
-	clean_string(mem);
+	mem = clean_string(mem);
 	len = mem->len - (mem->len % 4);
 	if (mem->data[mem->len - 1] == '=')
 		len -= 4;

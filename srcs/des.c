@@ -305,11 +305,11 @@ void	hash_des(t_mem *mem, t_opt *opt)
 	size = 0;
 	if (opt->d && opt->a)
 	{
-		// printf("len before -> %d\n",mem->len);
 		mem = base64_decode(mem);
 		// printf("mem->data %s\n", mem->data);
 		// printf("len after -> %d\n",mem->len);
-		// write_fd(3, mem);
+		// write_fd(1, mem);
+		// exit(0);
 	}
 	mem = des_encode(mem, opt);
 	if (opt->a && !opt->d)
