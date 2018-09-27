@@ -29,6 +29,8 @@ void		opt_init(t_opt *opt)
 	opt->fd = 1;
 	opt->k = 0;
 	opt->key = 0;
+	opt->pass = 0;
+	opt->salt = 0;
 	opt->vector = 0;
 }
 
@@ -66,4 +68,17 @@ void		open_fd(t_opt *opt)
 		ft_putendl(opt->output);
 		exit(-1);
 	}
+}
+
+int			get_hash_index(char *hash)
+{
+	int i;
+
+	i = -1;
+	while (HASH[++i])
+	{
+		if (ft_strequ(HASH[i], hash))
+			return (i);
+	}
+	return (-1);
 }

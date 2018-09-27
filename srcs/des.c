@@ -217,14 +217,19 @@ long        ft_msg_to_long(char *data, int len)
     return (tmp);
 }
 
+void	generate_key(t_opt *opt)
+{
+	opt->key = opt->pass ^ opt->salt;
+}
+
 void	create_subkeys(t_opt *opt)
 {
 	int i;
 	long ret;
 
 	i = 0;
-	ret = permute((opt->key != 0) ? (opt->key) :
-	1383827165325090801, g_des_pc1, 56);
+	(opt->key == 0) ? generate_key(opt) : 0;
+	ret = permute(opt->key, g_des_pc1, 56);
 	g_subkeys[i][0] = ret >> 28;
 	g_subkeys[i][1] = ret & 0xFFFFFFF;
 	while (++i <= 16)
@@ -269,6 +274,24 @@ long	generate_subkeys(long message, t_opt *opt)
 	return (ret);
 }
 
+t_mem	*create_message(long ret)
+{
+	t_mem *tmp;
+
+	tmp = (t_mem *)malloc(sizeof(t_mem));
+	tmp->data = (unsigned char*)ft_strnew(8);
+	tmp->data[0] = (ret >> 56) & 0xFF;
+	tmp->data[1] = (ret >> 48) & 0xFF;
+	tmp->data[2] = (ret >> 40) & 0xFF;
+	tmp->data[3] = (ret >> 32) & 0xFF;
+	tmp->data[4] = (ret >> 24) & 0xFF;
+	tmp->data[5] = (ret >> 16) & 0xFF;
+	tmp->data[6] = (ret >> 8) & 0xFF;
+	tmp->data[7] = ret & 0xFF;
+	tmp->len = 8;
+	return (tmp);
+}
+
 t_mem	*des_encode(t_mem *mem, t_opt *opt)
 {
 	t_mem	*message;
@@ -303,17 +326,7 @@ t_mem	*des_encode(t_mem *mem, t_opt *opt)
 			else
 				opt->vector = ret;
 		}
-		tmp = (t_mem *)malloc(sizeof(t_mem));
-		tmp->data = (unsigned char*)ft_strnew(8);
-		tmp->data[0] = (ret >> 56) & 0xFF;
-		tmp->data[1] = (ret >> 48) & 0xFF;
-		tmp->data[2] = (ret >> 40) & 0xFF;
-		tmp->data[3] = (ret >> 32) & 0xFF;
-		tmp->data[4] = (ret >> 24) & 0xFF;
-		tmp->data[5] = (ret >> 16) & 0xFF;
-		tmp->data[6] = (ret >> 8) & 0xFF;
-		tmp->data[7] = ret & 0xFF;
-		tmp->len = 8;
+		tmp = create_message(ret);
 		message = ft_memjoin(message, tmp);
 		mem->data += 8;
 		mem->len -= 8;

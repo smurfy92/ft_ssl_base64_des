@@ -12,7 +12,8 @@
 
 #include "../includes/ft_ssl.h"
 
-t_hash			g_hash[] = {hash_md5, hash_sha256, hash_base64, hash_des, hash_des};
+t_hash			g_hash[] =
+{hash_md5, hash_sha256, hash_base64, hash_des, hash_des};
 
 void	handle_stdin(t_opt *opt)
 {

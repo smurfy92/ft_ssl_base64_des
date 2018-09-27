@@ -12,22 +12,6 @@
 
 #include "../includes/ft_ssl.h"
 
-char		*padding_key(char *str)
-{
-	char *tmp;
-
-	if (ft_strlen(str) > 16)
-		str[16] = 0;
-	else if (ft_strlen(str) < 16)
-	{
-		tmp = ft_strnew(16);
-		ft_memcpy(tmp, "0000000000000000", 16);
-		ft_memcpy(tmp, str, ft_strlen(str));
-		return (tmp);
-	}
-	return (str);
-}
-
 void		push_arg_list(t_opt *opt, t_arg *arg)
 {
 	t_arg *tmp;
@@ -44,19 +28,46 @@ void		push_arg_list(t_opt *opt, t_arg *arg)
 	}
 }
 
+t_opt		*add_arg_padding(t_opt *opt, char *str)
+{
+	str = padding_key(str);
+	if (opt->k)
+	{
+		opt->key = ft_atoi_base(str, 16);
+		opt->k = 0;
+	}
+	if (opt->v)
+	{
+		opt->vector = ft_atoi_base(str, 16);
+		opt->v = 0;
+	}
+	if (opt->p)
+	{
+
+		opt->pass = ft_atoi_base(str, 16);
+		opt->p = 0;
+	}
+	if (opt->s)
+	{
+		opt->salt = ft_atoi_base(str, 16);
+		opt->s = 0;
+	}
+	return (opt);
+}
+
+t_opt		*check_args(t_opt *opt, char *str)
+{
+	if (opt->k || opt->v || opt->p)
+		return (add_arg_padding(opt, str));
+	return (NULL);
+}
+
 t_opt		*add_arg(t_opt *opt, char *str)
 {
 	t_arg *arg;
 
-	if (opt->k || opt->v)
-	{
-		str = padding_key(str);
-		(opt->k) ? (opt->key = ft_atoi_base(str, 16)) :
-		(opt->vector = ft_atoi_base(str, 16));
-		opt->k = 0;
-		opt->v = 0;
+	if ((opt = check_args(opt, str)))
 		return (opt);
-	}
 	if (opt->hash == 2)
 	{
 		if (!opt->i || opt->arg)
@@ -89,7 +100,6 @@ t_opt		*check_options(t_opt *opt, char *str)
 			opt->output = ft_strdup(str);
 			continue;
 		}
-
 		if (str[0] == '-')
 			b = 1;
 		else
@@ -98,19 +108,6 @@ t_opt		*check_options(t_opt *opt, char *str)
 			set_flags(opt, str[i]);
 	}
 	return (opt);
-}
-
-int			get_hash_index(char *hash)
-{
-	int i;
-
-	i = -1;
-	while (HASH[++i])
-	{
-		if (ft_strequ(HASH[i], hash))
-			return (i);
-	}
-	return (-1);
 }
 
 t_opt		*check_opt(t_opt *opt, char **argv)

@@ -26,7 +26,7 @@
 # define B(x) (ROTR(x, 6) ^ ROTR(x, 11) ^ ROTR(x, 25))
 # define C(x) (ROTR(x, 7) ^ ROTR(x, 18) ^ SHR(x, 3))
 # define D(x) (ROTR(x, 17) ^ ROTR(x, 19) ^ SHR(x, 10))
-# define HASH (const char*[6]){"md5", "sha256", "base64", "des", "des-cbc", NULL}
+# define HASH (const char*[6]){"md5","sha256","base64","des","des-cbc",NULL}
 # define DEBUG 1
 # define BUFFER 1024
 # include <stdint.h>
@@ -55,6 +55,8 @@ typedef struct		s_opt
 	struct s_arg	*arg;
 	long			key;
 	long			vector;
+	long			pass;
+	long			salt;
 	char			*output;
 	int				stdin;
 	int				p;
@@ -117,4 +119,6 @@ void				print_base64_encode(t_opt *opt, int value, int which);
 t_mem				*print_base64_decode(t_mem *mem, int i, int which);
 void				base64_encode(t_mem *mem, t_opt *opt);
 t_mem				*base64_decode(t_mem *mem);
+char				*padding_key(char *str);
+int					get_hash_index(char *hash);
 #endif

@@ -16,11 +16,9 @@ void	base64_encode(t_mem *mem, t_opt *opt)
 {
 	int i;
 	int tmp;
-	int len;
 
 	i = 0;
-	len = mem->len - (mem->len % 3);
-	while (i < len)
+	while (i < (mem->len - (mem->len % 3)))
 	{
 		tmp = 0;
 		tmp = (mem->data[i] << 16) | (mem->data[i + 1] << 8) |
@@ -44,9 +42,9 @@ void	base64_encode(t_mem *mem, t_opt *opt)
 
 t_mem	*clean_string(t_mem *mem)
 {
-	int i;
-	int j;
-	t_mem *tmp;
+	int		i;
+	int		j;
+	t_mem	*tmp;
 
 	tmp = (t_mem*)malloc(sizeof(t_mem));
 	tmp->data = (unsigned char*)ft_strnew(mem->len);
@@ -55,7 +53,8 @@ t_mem	*clean_string(t_mem *mem)
 	j = 0;
 	while (i < mem->len)
 	{
-		if (mem->data[i] != '\n' && mem->data[i] != ' ' && mem->data[i] != '\t' && mem->data[i] != '=')
+		if (mem->data[i] != '\n' && mem->data[i] != ' ' &&
+		mem->data[i] != '\t' && mem->data[i] != '=')
 		{
 			tmp->len++;
 			tmp->data[j++] = mem->data[i];
@@ -70,7 +69,7 @@ t_mem	*base64_decode(t_mem *mem)
 {
 	int		i;
 	int		len;
-	t_mem 	*tmp;
+	t_mem	*tmp;
 
 	tmp = NULL;
 	i = 0;
@@ -84,9 +83,9 @@ t_mem	*base64_decode(t_mem *mem)
 		i += 4;
 	}
 	if (mem->len % 4 == 2)
-		tmp = ft_memjoin(tmp, print_base64_decode(mem, i, 1));
-	else if (mem->len % 4 == 3)
 		tmp = ft_memjoin(tmp, print_base64_decode(mem, i, 2));
+	else if (mem->len % 4 == 3)
+		tmp = ft_memjoin(tmp, print_base64_decode(mem, i, 1));
 	return (tmp);
 }
 

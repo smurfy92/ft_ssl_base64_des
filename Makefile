@@ -15,6 +15,7 @@ SRC += common.c
 SRC += md5.c
 SRC += parsing.c
 SRC += parsing2.c
+SRC += parsing3.c
 SRC += print.c
 SRC += sha256.c
 SRC += utils.c
