@@ -27,3 +27,19 @@ char		*padding_key(char *str)
 	}
 	return (str);
 }
+
+void		push_arg_list(t_opt *opt, t_arg *arg)
+{
+	t_arg *tmp;
+
+	arg->next = NULL;
+	if (opt->arg == NULL)
+		opt->arg = arg;
+	else
+	{
+		tmp = opt->arg;
+		while (tmp->next)
+			tmp = tmp->next;
+		tmp->next = arg;
+	}
+}

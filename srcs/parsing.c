@@ -12,23 +12,7 @@
 
 #include "../includes/ft_ssl.h"
 
-void		push_arg_list(t_opt *opt, t_arg *arg)
-{
-	t_arg *tmp;
-
-	arg->next = NULL;
-	if (opt->arg == NULL)
-		opt->arg = arg;
-	else
-	{
-		tmp = opt->arg;
-		while (tmp->next)
-			tmp = tmp->next;
-		tmp->next = arg;
-	}
-}
-
-void	add_arg_padding(t_opt *opt, char *str)
+void		add_arg_padding(t_opt *opt, char *str)
 {
 	str = padding_key(str);
 	if (opt->k)
@@ -53,7 +37,7 @@ void	add_arg_padding(t_opt *opt, char *str)
 	}
 }
 
-int		check_args(t_opt *opt, char *str)
+int			check_args(t_opt *opt, char *str)
 {
 	if (opt->k || opt->v || opt->p)
 	{

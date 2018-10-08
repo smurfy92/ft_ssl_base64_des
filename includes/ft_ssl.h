@@ -26,7 +26,7 @@
 # define B(x) (ROTR(x, 6) ^ ROTR(x, 11) ^ ROTR(x, 25))
 # define C(x) (ROTR(x, 7) ^ ROTR(x, 18) ^ SHR(x, 3))
 # define D(x) (ROTR(x, 17) ^ ROTR(x, 19) ^ SHR(x, 10))
-# define HASH (const char*[6]){"md5","sha256","base64","des","des-cbc",NULL}
+# define HASH (const char*[6]){"md5","sha256","base64","des-ecb","des-cbc",NULL}
 # define DEBUG 1
 # define BUFFER 1024
 # include <stdint.h>
@@ -121,4 +121,14 @@ void				base64_encode(t_mem *mem, t_opt *opt);
 t_mem				*base64_decode(t_mem *mem);
 char				*padding_key(char *str);
 int					get_hash_index(char *hash);
+void				create_subkeys(t_opt *opt);
+long				ft_function_s(long xor);
+long				ft_msg_to_long(char *data, int len);
+long				permute(long to_permute, int32_t *tab, int length);
+long				generate_subkeys(long message, t_opt *opt);
+void				generate_key(t_opt *opt);
+t_mem				*create_message(long ret);
+long				do_subkey(long right, int i);
+void				push_arg_list(t_opt *opt, t_arg *arg);
+t_mem				*des_encode_boucle(t_opt *opt, t_mem *mem);
 #endif

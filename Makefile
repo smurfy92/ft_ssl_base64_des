@@ -22,6 +22,8 @@ SRC += utils.c
 SRC += base64.c
 SRC += display.c
 SRC += des.c
+SRC += des2.c
+SRC += des3.c
 
 NAME = ft_ssl
 
