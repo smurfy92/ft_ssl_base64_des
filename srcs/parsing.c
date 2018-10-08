@@ -28,7 +28,7 @@ void		push_arg_list(t_opt *opt, t_arg *arg)
 	}
 }
 
-t_opt		*add_arg_padding(t_opt *opt, char *str)
+void	add_arg_padding(t_opt *opt, char *str)
 {
 	str = padding_key(str);
 	if (opt->k)
@@ -43,7 +43,6 @@ t_opt		*add_arg_padding(t_opt *opt, char *str)
 	}
 	if (opt->p)
 	{
-
 		opt->pass = ft_atoi_base(str, 16);
 		opt->p = 0;
 	}
@@ -52,21 +51,23 @@ t_opt		*add_arg_padding(t_opt *opt, char *str)
 		opt->salt = ft_atoi_base(str, 16);
 		opt->s = 0;
 	}
-	return (opt);
 }
 
-t_opt		*check_args(t_opt *opt, char *str)
+int		check_args(t_opt *opt, char *str)
 {
 	if (opt->k || opt->v || opt->p)
-		return (add_arg_padding(opt, str));
-	return (NULL);
+	{
+		add_arg_padding(opt, str);
+		return (1);
+	}
+	return (0);
 }
 
 t_opt		*add_arg(t_opt *opt, char *str)
 {
 	t_arg *arg;
 
-	if ((opt = check_args(opt, str)))
+	if (check_args(opt, str))
 		return (opt);
 	if (opt->hash == 2)
 	{

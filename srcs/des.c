@@ -222,11 +222,12 @@ void	generate_key(t_opt *opt)
 	t_mem *mem;
 
 	mem = NULL;
+	char *str;
+	str = NULL;
 	if (!opt->pass)
 	{
-		write(1, "enter des-cbc encryption password:", 34);
-		mem = read_fd(0);
-		opt->pass = ft_atoi_base((char *)mem->data, 16);
+		str = getpass("enter des-cbc encryption password:");
+		opt->pass = ft_atoi_base(str, 16);
 	}
 	opt->key = opt->pass ^ opt->salt;
 }
