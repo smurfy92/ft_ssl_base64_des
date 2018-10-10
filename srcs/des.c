@@ -101,7 +101,7 @@ void	create_subkeys(t_opt *opt)
 	long	ret;
 
 	i = 0;
-	(opt->key == -1) ? generate_key(opt) : 0;
+	(opt->key == -2) ? generate_key(opt) : 0;
 	ret = permute(opt->key, g_des_pc1, 56);
 	g_subkeys[i][0] = ret >> 28;
 	g_subkeys[i][1] = ret & 0xFFFFFFF;

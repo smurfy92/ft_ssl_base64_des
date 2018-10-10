@@ -4,9 +4,11 @@ if [ ! -f ft_ssl ]; then
 	make
 fi
 
-TEST[0]=$(echo toto | ./ft_ssl base64 -e)
+TEST[0]=$(echo "repeat after me 'encoding is not encryption'" | ./ft_ssl base64)
+TEST[1]=$(echo "All your base are belong to us. You have no chance make your time." | ./ft_ssl base64 | ./ft_ssl base64 -d)
 
-RET[0]='dG90bwo='
+RET[0]='cmVwZWF0IGFmdGVyIG1lICdlbmNvZGluZyBpcyBub3QgZW5jcnlwdGlvbicK'
+RET[1]='All your base are belong to us. You have no chance make your time.'
 
 I=0
 while [ $I -lt ${#TEST[@]} ]; do
