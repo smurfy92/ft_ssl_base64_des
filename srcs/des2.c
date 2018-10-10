@@ -114,11 +114,6 @@ long		ft_msg_to_long(char *data, int len)
 	return (tmp);
 }
 
-long		PBKDF2(long pass, long salt, int iter, int size)
-{
-
-}
-
 void		generate_key(t_opt *opt)
 {
 	char *str;
@@ -129,8 +124,7 @@ void		generate_key(t_opt *opt)
 		str = getpass("enter des-cbc encryption password:");
 		opt->pass = ft_atoi_base(str, 16);
 	}
-	opt->key = PBKDF2(opt->pass, opt->salt, 64000, 8);
-	// opt->key = opt->pass ^ opt->salt;
+	opt->key = opt->pass ^ opt->salt;
 }
 
 t_mem		*padding_des(t_mem *mem)

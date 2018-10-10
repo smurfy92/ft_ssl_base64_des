@@ -106,8 +106,9 @@ t_opt		*check_opt(t_opt *opt, char **argv)
 	opt_init(opt);
 	if (opt->hash == -1)
 	{
-		ft_putendl("ft_ssl: invalid hash algorithm");
-		ft_putendl("\nMessage Digest Commands:\nmd5\nsha256");
+		ft_putendl("ft_ssl: invalid command");
+		ft_putendl("\nStandard commands:\n\nMessage digest commands:\nmd5\n\
+			sha256\n\nCipher commands:\nbase64\ndes-ecb\ndes-cbc");
 		exit(-1);
 	}
 	while (argv[++i])
