@@ -66,6 +66,18 @@ void	handle_args(t_opt *opt)
 	}
 }
 
+// void	print_opt(t_opt *opt)
+// {
+// 	while (opt->arg)
+// 	{
+// 		printf("arg -> %s\n", opt->arg->str);
+// 		opt->arg = opt->arg->next;
+// 	}
+// 	printf("output -> %s\n",opt->output);
+// 	printf("salt -> %lu\n", opt->salt);
+// 	printf("password -> %lu\n", opt->pass);
+// }
+
 int		main(int argc, char **argv)
 {
 	t_opt	*opt;

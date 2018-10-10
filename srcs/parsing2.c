@@ -28,7 +28,7 @@ void		opt_init(t_opt *opt)
 	opt->arg = NULL;
 	opt->fd = 1;
 	opt->k = 0;
-	opt->key = 0;
+	opt->key = -1;
 	opt->pass = 0;
 	opt->salt = 0;
 	opt->vector = 0;

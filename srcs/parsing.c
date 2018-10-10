@@ -39,7 +39,7 @@ void		add_arg_padding(t_opt *opt, char *str)
 
 int			check_args(t_opt *opt, char *str)
 {
-	if (opt->k || opt->v || opt->p)
+	if (opt->k || opt->v || opt->p || opt->s)
 	{
 		add_arg_padding(opt, str);
 		return (1);
@@ -83,7 +83,8 @@ t_opt		*check_options(t_opt *opt, char *str)
 		if (opt->o)
 		{
 			opt->output = ft_strdup(str);
-			continue;
+			opt->o = 0;
+			break ;
 		}
 		if (str[0] == '-')
 			b = 1;
